@@ -19,9 +19,22 @@ class MobilController extends Controller
     }
     public function store(Request $request)
     {
+        $namaFile = null;
+
+        if ($request->hasFile('gambar')) {
+        $file = $request->file('gambar');
+        $namaFile = time() . "_" . $file->getClientOriginalName();
+        $file->move(public_path('img'), $namaFile); // Simpan ke folder public/img
+        }
+
         Mobil::create([
             'nama_mobil' => $request->nama_mobil,
-            'harga_per_hari' => $request->harga_per_hari
+            'harga_per_hari' => $request->harga_per_hari,
+            'status' => 'tersedia',
+            'no_polisi' => $request->no_polisi,
+            'gambar'  => $namaFile
+            
+    
         ]);
 
         return redirect('/mobil');
@@ -64,6 +77,7 @@ class MobilController extends Controller
                 // 2. Tampilkan view edit dan kirim data mobilnya
                 return view('mobil.edit', compact('mobil'));
                 }
+
     }
 
 

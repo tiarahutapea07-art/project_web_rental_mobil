@@ -8,6 +8,9 @@ class Mobil extends Model
 {
     protected $fillable =[
         'nama_mobil',
-        'harga_per_hari'
+        'harga_per_hari',
+        'status',
+        'no_polisi',
+        'gambar',
     ];
 }
