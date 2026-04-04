@@ -1,55 +1,50 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MobilController;
+use App\Models\Mobil;
 
-/*
-|--------------------------------------------------------------------------
-| ROUTE LOGIN
-|--------------------------------------------------------------------------
-*/
+// --- 1. DASHBOARD ---
+Route::get('/', function () { return view('welcome'); });
 
-Route::get('/', function () {
-    return redirect('/login');
+Route::get('/dashboard', function () {
+    $totalMobil = Mobil::count();
+    $mobilTersedia = Mobil::where('status', 'tersedia')->count();
+    $mobilDisewa = Mobil::where('status', 'tidak tersedia')->count();
+    return view('dashboard', compact('totalMobil', 'mobilTersedia', 'mobilDisewa'));
+})->name('dashboard');
+
+// --- 2. HALAMAN STATIS TEMPLATE (PENTING) ---
+// Rute bersih untuk charts dan tables (tanpa .html)
+Route::get('/charts', function () { return view('charts'); })->name('charts');
+Route::get('/tables', function () { return view('tables'); })->name('tables');
+
+// --- 3. MANAJEMEN MOBIL ---
+Route::get('/mobil', [MobilController::class, 'index'])->name('mobil.index');
+Route::get('/mobil/create', [MobilController::class, 'create'])->name('mobil.create');
+Route::post('/mobil', [MobilController::class, 'store'])->name('mobil.store');
+Route::get('/mobil/{id}/edit', [MobilController::class, 'edit'])->name('mobil.edit');
+Route::put('/mobil/{id}', [MobilController::class, 'update'])->name('mobil.update');
+Route::delete('/mobil/{id}', [MobilController::class, 'destroy'])->name('mobil.destroy');
+
+// --- 4. CUSTOMER ---
+Route::get('/customer', [\App\Http\Controllers\CustomerController::class, 'index'])->name('customer.index');
+Route::get('/customer/create', [\App\Http\Controllers\CustomerController::class, 'create'])->name('customer.create');
+Route::post('/customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customer.store');
+Route::get('/customer/{id}/edit', [\App\Http\Controllers\CustomerController::class, 'edit'])->name('customer.edit');
+Route::put('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
+Route::delete('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->name('customer.destroy');
+
+// --- 5. GENERATOR ---
+Route::get('/generate-mobil', function () {
+    $daftar_gambar = ['agya', 'avanza', 'ayla', 'brio', 'fortuner', 'hr-v', 'jazz', 'pajerosport', 'yariz'];
+    foreach ($daftar_gambar as $nama) {
+        Mobil::updateOrCreate(['gambar' => $nama . '.png'], [
+            'nama_mobil' => strtoupper($nama),
+            'harga_per_hari' => rand(350, 750) * 1000,
+            'status' => 'tersedia',
+            'no_polisi' => 'BG ' . rand(1000, 9999) . ' OK',
+        ]);
+    }
+    return "Berhasil! Cek di /mobil";
 });
-
-Route::get('/login', [AuthController::class, 'showLogin']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/logout', [AuthController::class, 'logout']);
-
-/*
-|--------------------------------------------------------------------------
-| ROUTE YANG HARUS LOGIN
-|--------------------------------------------------------------------------
-*/
-    Route::get('/dashboard', [AuthController::class, 'dashboard']);
-
-    Route::get('/mobil', [MobilController::class, 'index']);
-    Route::get('/mobil/create', [MobilController::class, 'create']);
-    Route::post('/mobil', [MobilController::class, 'store']);
-    Route::delete('/mobil/{id}', [MobilController::class, 'destroy']);
-    Route::put('/mobil/{id}', [MobilController::class, 'update']);
-    Route::get('/mobil/{id}/edit', [MobilController::class, 'edit']);
-
-    Route::get('/customer', [CustomerController::class, 'index']);
-    Route::get('/customer/create', [CustomerController::class, 'create']);
-    Route::post('/customer/store', [CustomerController::class, 'store']);
-
-    // Dashboard
-    Route::get('/dashboard', [AuthController::class, 'dashboard']);
-
-    // Mobil
-    Route::get('/mobil', [MobilController::class, 'index']);
-    Route::get('/mobil/create', [MobilController::class, 'create']);
-    Route::post('/mobil', [MobilController::class, 'store']);
-    Route::delete('/mobil/{id}', [MobilController::class, 'destroy']);
-    Route::put('/mobil/{id}', [MobilController::class, 'update']);
-    Route::get('/mobil/{id}/edit', [MobilController::class, 'edit']);
-
-    // Customer
-    Route::get('/customer', [CustomerController::class, 'index']);
-    Route::get('/customer/create', [CustomerController::class, 'create']);
-    Route::post('/customer/store', [CustomerController::class, 'store']);

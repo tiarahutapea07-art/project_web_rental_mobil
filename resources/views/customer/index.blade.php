@@ -2,6 +2,15 @@
 
 @section('content')
 <div class="container-fluid">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Data Customer</h1>
         <a href="{{ url('/customer/create') }}" class="btn btn-primary btn-sm shadow-sm">
@@ -35,8 +44,17 @@
                             <td>{{ $c->no_telp }}</td>
                             <td>{{ $c->alamat }}</td>
                             <td>
-                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm">Hapus</a>
+                                <a href="{{ url('/customer/' . $c->id . '/edit') }}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form action="{{ url('/customer/' . $c->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" 
+                                            onclick="return confirm('Yakin ingin menghapus data ini?');">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         @endforeach

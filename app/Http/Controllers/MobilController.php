@@ -19,25 +19,30 @@ class MobilController extends Controller
     }
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'nama_mobil' => 'required|string|max:255',
+            'harga_per_hari' => 'required|numeric|min:0',
+            'no_polisi' => 'required|string|max:20',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
         $namaFile = null;
 
         if ($request->hasFile('gambar')) {
-        $file = $request->file('gambar');
-        $namaFile = time() . "_" . $file->getClientOriginalName();
-        $file->move(public_path('img'), $namaFile); // Simpan ke folder public/img
+            $file = $request->file('gambar');
+            $namaFile = time() . "_" . $file->getClientOriginalName();
+            $file->move(public_path('img'), $namaFile);
         }
 
         Mobil::create([
-            'nama_mobil' => $request->nama_mobil,
-            'harga_per_hari' => $request->harga_per_hari,
+            'nama_mobil' => $validated['nama_mobil'],
+            'harga_per_hari' => $validated['harga_per_hari'],
             'status' => 'tersedia',
-            'no_polisi' => $request->no_polisi,
+            'no_polisi' => $validated['no_polisi'],
             'gambar'  => $namaFile
-            
-    
         ]);
 
-        return redirect('/mobil');
+        return redirect('/mobil')->with('success', 'Mobil berhasil ditambahkan!');
     }
 
     public function destroy($id)
@@ -50,36 +55,23 @@ class MobilController extends Controller
 
     public function update(Request $request, $id)
     {
-
-        //Validasi input
-        $request->validate([
+        $validated = $request->validate([
             'nama_mobil' => 'required|string|max:255',
-            'harga_per_hari' => 'required|numeric',
-            ]);
-            
-            // Cari mobil berdasarkan ID
-            $mobil = Mobil::findOrFail($id);
-            
-            // Update data
-            $mobil->nama_mobil = $request->nama_mobil;
-            $mobil->harga_per_hari = $request->harga_per_hari;
-            $mobil->save();
-            
-            // Redirect atau tampilkan pesan sukses
-            return redirect('/mobil')->with('success', 'Data mobil berhasil diupdate!');
-            }
+            'harga_per_hari' => 'required|numeric|min:0',
+            'no_polisi' => 'required|string|max:20',
+            'status' => 'required|in:tersedia,tidak tersedia'
+        ]);
+        
+        $mobil = Mobil::findOrFail($id);
+        $mobil->update($validated);
+        
+        return redirect('/mobil')->with('success', 'Data mobil berhasil diperbarui!');
+    }
             
             public function edit($id)
             {
-                // 1. Ambil data mobil berdasarkan ID
                 $mobil = Mobil::findOrFail($id);
-                
-                // 2. Tampilkan view edit dan kirim data mobilnya
                 return view('mobil.edit', compact('mobil'));
-                }
-
-    }
-
-
-    
+            }
+}
 
