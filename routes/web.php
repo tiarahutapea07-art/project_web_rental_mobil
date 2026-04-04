@@ -4,10 +4,14 @@ use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MobilController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// The default welcome route is replaced by HomeController index
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
 
@@ -25,4 +29,3 @@ Route::get('/customer', [CustomerController::class, 'index']);
 Route::get('/customer/create', [CustomerController::class, 'create']);
 // Route untuk memproses penyimpanan data
 Route::post('/customer/store', [CustomerController::class, 'store']);
-Route::get('/mobil/{id}/edit', [MobilController::class, 'edit']);
