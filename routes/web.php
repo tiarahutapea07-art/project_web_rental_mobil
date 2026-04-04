@@ -1,31 +1,55 @@
 <?php
 
-use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MobilController;
-use App\Http\Controllers\HomeController;
 
-// The default welcome route is replaced by HomeController index
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+/*
+|--------------------------------------------------------------------------
+| ROUTE LOGIN
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', function () {
+    return redirect('/login');
+});
 
-Route::get('/dashboard', [DashboardController::class, 'index']);
+Route::get('/login', [AuthController::class, 'showLogin']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/logout', [AuthController::class, 'logout']);
 
-Route::get('/mobil', [MobilController::class, 'index']);
-Route::get('/mobil/create', [MobilController::class, 'create']);
-Route::post('/mobil', [MobilController::class, 'store']);
-Route::delete ('/mobil/{id}', [MobilController::class, 'destroy']);
-// untuk update
-Route::put('/mobil/{id}', [MobilController::class, 'update']);
-//untuk form edit
-Route::get('/mobil/{id}/edit', [MobilController::class, 'edit']);
+/*
+|--------------------------------------------------------------------------
+| ROUTE YANG HARUS LOGIN
+|--------------------------------------------------------------------------
+*/
+    Route::get('/dashboard', [AuthController::class, 'dashboard']);
 
-// Route untuk menampilkan form tambah
-Route::get('/customer', [CustomerController::class, 'index']);
-Route::get('/customer/create', [CustomerController::class, 'create']);
-// Route untuk memproses penyimpanan data
-Route::post('/customer/store', [CustomerController::class, 'store']);
+    Route::get('/mobil', [MobilController::class, 'index']);
+    Route::get('/mobil/create', [MobilController::class, 'create']);
+    Route::post('/mobil', [MobilController::class, 'store']);
+    Route::delete('/mobil/{id}', [MobilController::class, 'destroy']);
+    Route::put('/mobil/{id}', [MobilController::class, 'update']);
+    Route::get('/mobil/{id}/edit', [MobilController::class, 'edit']);
+
+    Route::get('/customer', [CustomerController::class, 'index']);
+    Route::get('/customer/create', [CustomerController::class, 'create']);
+    Route::post('/customer/store', [CustomerController::class, 'store']);
+
+    // Dashboard
+    Route::get('/dashboard', [AuthController::class, 'dashboard']);
+
+    // Mobil
+    Route::get('/mobil', [MobilController::class, 'index']);
+    Route::get('/mobil/create', [MobilController::class, 'create']);
+    Route::post('/mobil', [MobilController::class, 'store']);
+    Route::delete('/mobil/{id}', [MobilController::class, 'destroy']);
+    Route::put('/mobil/{id}', [MobilController::class, 'update']);
+    Route::get('/mobil/{id}/edit', [MobilController::class, 'edit']);
+
+    // Customer
+    Route::get('/customer', [CustomerController::class, 'index']);
+    Route::get('/customer/create', [CustomerController::class, 'create']);
+    Route::post('/customer/store', [CustomerController::class, 'store']);
