@@ -3,11 +3,26 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MobilController;
 use App\Models\Mobil;
+use App\Http\Controllers\AuthController;
+
+// --- AUTH ROUTES ---
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 // --- 1. DASHBOARD ---
-Route::get('/', function () { return view('welcome'); });
+Route::get('/', function () {
+    if(session('login')) {
+        return redirect('/dashboard');
+    } else {
+        return redirect('/login');
+    }
+});
 
 Route::get('/dashboard', function () {
+    if(!session('login')) {
+        return redirect('/login');
+    }
     $totalMobil = Mobil::count();
     $mobilTersedia = Mobil::where('status', 'tersedia')->count();
     $mobilDisewa = Mobil::where('status', 'tidak tersedia')->count();
