@@ -99,6 +99,14 @@
         </div>
             </li>
 
+            <!-- Nav Item - Rental -->
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('/rental') }}">
+                    <i class="fas fa-fw fa-key"></i>
+                    <span>Penyewaan</span>
+                </a>
+            </li>
+
             <!-- Nav Item - Charts -->
             <li class="nav-item">
                 <a class="nav-link" href="{{ url('/charts') }}">

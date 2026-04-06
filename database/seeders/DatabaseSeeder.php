@@ -180,5 +180,41 @@ class DatabaseSeeder extends Seeder
                 $mobil
             );
         }
+
+        // Data customer dummy
+        $daftar_customer = [
+            [
+                'nama' => 'John Doe',
+                'nik' => '1234567890123456',
+                'no_telp' => '081234567890',
+                'alamat' => 'Jl. Sudirman No. 1, Jakarta'
+            ],
+            [
+                'nama' => 'Jane Smith',
+                'nik' => '2345678901234567',
+                'no_telp' => '081234567891',
+                'alamat' => 'Jl. Thamrin No. 2, Jakarta'
+            ],
+            [
+                'nama' => 'Bob Johnson',
+                'nik' => '3456789012345678',
+                'no_telp' => '081234567892',
+                'alamat' => 'Jl. Gatot Subroto No. 3, Jakarta'
+            ],
+            [
+                'nama' => 'Alice Brown',
+                'nik' => '4567890123456789',
+                'no_telp' => '081234567893',
+                'alamat' => 'Jl. MH Thamrin No. 4, Jakarta'
+            ],
+        ];
+
+        // Insert data customer
+        foreach ($daftar_customer as $customer) {
+            \App\Models\Customer::firstOrCreate(
+                ['nik' => $customer['nik']],
+                $customer
+            );
+        }
     }
 }

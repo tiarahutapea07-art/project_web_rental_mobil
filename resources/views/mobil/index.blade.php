@@ -314,9 +314,9 @@
                         <a href="{{ url('/mobil/'.$m->id.'/edit') }}" class="btn btn-edit btn-sm">
                             <i class="fas fa-edit mr-1"></i> Edit
                         </a>
-                        <button class="btn btn-sewa btn-sm" {{ $m->status == 'tidak tersedia' ? 'disabled' : '' }}>
+                        <a href="{{ url('/rental/create/'.$m->id) }}" class="btn btn-sewa btn-sm {{ $m->status == 'tidak tersedia' ? 'disabled' : '' }}">
                             <i class="fas fa-key mr-1"></i> Sewa
-                        </button>
+                        </a>
                     </div>
                     
                     <div class="text-center mt-2">

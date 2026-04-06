@@ -13,4 +13,9 @@ class Mobil extends Model
         'no_polisi',
         'gambar',
     ];
+
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
 }

@@ -50,7 +50,13 @@ Route::get('/customer/{id}/edit', [\App\Http\Controllers\CustomerController::cla
 Route::put('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
 Route::delete('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->name('customer.destroy');
 
-// --- 5. GENERATOR ---
+// --- 5. RENTAL ---
+Route::get('/rental', [\App\Http\Controllers\RentalController::class, 'index'])->name('rental.index');
+Route::get('/rental/create/{mobil_id}', [\App\Http\Controllers\RentalController::class, 'create'])->name('rental.create');
+Route::post('/rental', [\App\Http\Controllers\RentalController::class, 'store'])->name('rental.store');
+Route::post('/rental/{id}/return', [\App\Http\Controllers\RentalController::class, 'return'])->name('rental.return');
+
+// --- 6. GENERATOR ---
 Route::get('/generate-mobil', function () {
     $daftar_gambar = ['agya', 'avanza', 'ayla', 'brio', 'fortuner', 'hr-v', 'jazz', 'pajerosport', 'yariz'];
     foreach ($daftar_gambar as $nama) {
