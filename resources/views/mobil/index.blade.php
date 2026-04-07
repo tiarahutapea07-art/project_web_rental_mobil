@@ -78,7 +78,7 @@
     }
     
     .status-badge.unavailable {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        background: linear-gradient(135deg, #6b89ff 0%, #8a92a5 100%);
         color: white;
     }
     
@@ -138,7 +138,7 @@
     
     .btn-sewa {
         flex: 1;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #667eea 0%, #9471b8 100%);
         border: none;
         color: white;
         border-radius: 8px;
@@ -170,7 +170,7 @@
     }
     
     .btn-delete {
-        color: #e74c3c;
+        color: #5191c2;
         font-size: 0.85rem;
         padding: 0.3rem 0.8rem;
         text-decoration: none !important;
@@ -179,7 +179,7 @@
     }
     
     .btn-delete:hover {
-        color: #c0392b;
+        color: #ea8484;
     }
     
     .stats-container {
@@ -213,7 +213,7 @@
     }
     
     .stat-card.unavailable {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        background: linear-gradient(135deg, #5c74c2 0%, #0e4780 100%);
     }
     
     .header-section {
