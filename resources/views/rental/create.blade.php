@@ -72,6 +72,20 @@
         margin-bottom: 1.5rem;
     }
 
+    .customer-option-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-top: 0.75rem;
+    }
+
+    .customer-option-group .form-check {
+        padding: 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        background: #f8f9fa;
+    }
+
     .form-label {
         font-weight: 600;
         color: #2c3e50;
@@ -232,18 +246,69 @@
                     @csrf
                     <input type="hidden" name="mobil_id" value="{{ $mobil->id }}">
 
-                    <!-- Customer Selection -->
+                    <!-- Customer Option -->
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="fas fa-user mr-2"></i>Pilih Customer
+                            <i class="fas fa-user mr-2"></i>Pilih Opsi Customer
                         </label>
-                        <div class="select-wrapper">
-                            <select name="customer_id" class="form-control" required>
-                                <option value="">-- Pilih Customer --</option>
-                                @foreach($customers as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->nama }} ({{ $customer->nik }})</option>
-                                @endforeach
-                            </select>
+                        <div class="customer-option-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="customer_option" id="existing" value="existing" checked>
+                                <label class="form-check-label" for="existing">
+                                    Pilih Customer yang Sudah Ada
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="customer_option" id="new" value="new">
+                                <label class="form-check-label" for="new">
+                                    Tambah Customer Baru
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Existing Customer Selection -->
+                    <div id="existingCustomerSection">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user mr-2"></i>Pilih Customer
+                            </label>
+                            <div class="select-wrapper">
+                                <select name="customer_id" class="form-control" required>
+                                    <option value="">-- Pilih Customer --</option>
+                                    @foreach($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->nama }} ({{ $customer->nik }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Customer Form -->
+                    <div id="newCustomerSection" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user mr-2"></i>Nama Lengkap
+                            </label>
+                            <input type="text" name="nama" class="form-control" placeholder="Masukkan nama sesuai KTP">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-id-card mr-2"></i>NIK
+                            </label>
+                            <input type="number" name="nik" class="form-control" placeholder="Contoh: 3201xxxxxxxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-phone mr-2"></i>Nomor Telepon
+                            </label>
+                            <input type="text" name="no_telp" class="form-control" placeholder="Contoh: 08123456789">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Alamat
+                            </label>
+                            <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan alamat domisili"></textarea>
                         </div>
                     </div>
 
@@ -303,6 +368,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const lamaSewa = document.getElementById('lamaSewa');
     const totalHarga = document.getElementById('totalHarga');
     const hargaPerHari = {{ $mobil->harga_per_hari }};
+
+    // Customer option toggle
+    const existingRadio = document.getElementById('existing');
+    const newRadio = document.getElementById('new');
+    const existingSection = document.getElementById('existingCustomerSection');
+    const newSection = document.getElementById('newCustomerSection');
+
+    function toggleCustomerSection() {
+        if (existingRadio.checked) {
+            existingSection.style.display = 'block';
+            newSection.style.display = 'none';
+            // Make new customer fields not required
+            document.querySelectorAll('#newCustomerSection input, #newCustomerSection textarea').forEach(el => el.required = false);
+            document.querySelector('select[name="customer_id"]').required = true;
+        } else {
+            existingSection.style.display = 'none';
+            newSection.style.display = 'block';
+            // Make new customer fields required
+            document.querySelectorAll('#newCustomerSection input, #newCustomerSection textarea').forEach(el => el.required = true);
+            document.querySelector('select[name="customer_id"]').required = false;
+        }
+    }
+
+    existingRadio.addEventListener('change', toggleCustomerSection);
+    newRadio.addEventListener('change', toggleCustomerSection);
 
     function calculatePrice() {
         const start = new Date(tanggalSewa.value);

@@ -12,10 +12,6 @@ class CustomerController extends Controller
         return view('customer.index', compact('customers'));
     }
 
-    public function create() {
-        return view('customer.create');
-    }
-
     public function store(Request $request) {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',

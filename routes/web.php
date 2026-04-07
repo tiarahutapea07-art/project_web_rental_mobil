@@ -44,7 +44,6 @@ Route::delete('/mobil/{id}', [MobilController::class, 'destroy'])->name('mobil.d
 
 // --- 4. CUSTOMER ---
 Route::get('/customer', [\App\Http\Controllers\CustomerController::class, 'index'])->name('customer.index');
-Route::get('/customer/create', [\App\Http\Controllers\CustomerController::class, 'create'])->name('customer.create');
 Route::post('/customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customer.store');
 Route::get('/customer/{id}/edit', [\App\Http\Controllers\CustomerController::class, 'edit'])->name('customer.edit');
 Route::put('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
