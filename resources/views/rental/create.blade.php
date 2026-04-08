@@ -215,7 +215,7 @@
             <div class="form-section">
                 <!-- Mobil Preview -->
                 <div class="mobil-preview">
-                    @if($mobil->gambar)
+                    @if(Smobil->gambar)
                         <img src="{{ asset('img/' . $mobil->gambar) }}" alt="{{ $mobil->nama_mobil }}">
                     @else
                         <div style="width: 80px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
