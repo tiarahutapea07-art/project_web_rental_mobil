@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MobilController;
 use App\Models\Mobil;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TransaksiController;
 
 // --- AUTH ROUTES ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -68,3 +69,5 @@ Route::get('/generate-mobil', function () {
     }
     return "Berhasil! Cek di /mobil";
 });
+
+Route::resource('transaksi', TransaksiController::class);

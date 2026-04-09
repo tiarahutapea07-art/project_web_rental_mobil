@@ -20,6 +20,8 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset ('sbadmin2/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 
 </head>
 
@@ -61,19 +63,11 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMobil"
-                aria-expanded="true" aria-controls="collapseMobil">
-                <i class="fas fa-fw fa-car"></i>
-                <span>Data Mobil</span>
-            </a>
-            <div id="collapseMobil" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Opsi Mobil:</h6>
-                    <a class="collapse-item" href="{{ url('/mobil') }}">Daftar Mobil</a>
-                    <a class="collapse-item" href="{{ url('/mobil/create') }}">Tambah Mobil</a>
-                </div>
-            </div>
-        </li>
+    <a class="nav-link" href="{{ url('/mobil') }}">
+        <i class="fas fa-fw fa-car"></i>
+        <span>Data Mobil</span>
+    </a>
+</li>
             
 
             <!-- Divider -->
@@ -108,7 +102,7 @@
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="{{ url('/charts') }}">
+                <a class="nav-link" href="{{ route('transaksi.index') }}">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Transaksi</span></a>
             </li>

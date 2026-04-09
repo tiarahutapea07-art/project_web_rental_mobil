@@ -25,4 +25,8 @@ class Rental extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+    public function transaksi()
+    {
+        return $this->hasOne(Transaksi::class);
+    }
 }

@@ -20,7 +20,7 @@
     
     .img-mobil-container {
         height: 240px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #3f59cd 0%, #7d73e8 100%);
         padding: 2rem;
         position: relative;
         display: flex;
@@ -217,7 +217,7 @@
     }
     
     .header-section {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: linear-gradient(135deg, #b0bbca 0%, #b0bbca  100%);
         padding: 2rem;
         border-radius: 16px;
         margin-bottom: 2rem;
@@ -239,15 +239,15 @@
     <div class="header-section mb-4">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <h1 class="h2 mb-1 text-gray-800 font-weight-bold">
-                    <i class="fas fa-car-alt text-primary mr-2"></i> Katalog Mobil
+                <h1 class="h2 mb-1 text-black-900 font-weight-bold">
+                    <i class="fas fa-car-alt text-dark mr-2"></i> Katalog Mobil
                 </h1>
-                <p class="text-gray-600 mb-0">
+                <p class="text-black-600 mb-0">
                     <i class="fas fa-info-circle mr-2"></i> {{ $mobils->count() }} kendaraan tersedia untuk disewa
                 </p>
             </div>
-            <a href="{{ url('/mobil/create') }}" class="btn btn-primary btn-lg shadow-sm rounded-pill px-5">
-                <i class="fas fa-plus mr-2"></i> Tambah Unit Baru
+            <a href="{{ url('/mobil/create') }}" class="btn btn-primary" style="padding: 5px 15px; font-size: 14px;">
+                <i class="fas fa-plus"></i> Tambah Unit Baru
             </a>
         </div>
     </div>

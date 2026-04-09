@@ -227,132 +227,88 @@
             </div>
 
             <div class="form-section">
-                <!-- Mobil Preview -->
-                <div class="mobil-preview">
-                    @if(Smobil->gambar)
-                        <img src="{{ asset('img/' . $mobil->gambar) }}" alt="{{ $mobil->nama_mobil }}">
-                    @else
-                        <div style="width: 80px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-car fa-lg"></i>
-                        </div>
-                    @endif
-                    <div class="mobil-info">
-                        <h4>{{ $mobil->nama_mobil }}</h4>
-                        <p>Rp {{ number_format($mobil->harga_per_hari, 0, ',', '.') }} / hari</p>
-                    </div>
-                </div>
-
                 <form action="{{ route('rental.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="mobil_id" value="{{ $mobil->id }}">
 
-                    <!-- Customer Option -->
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-user mr-2"></i>Pilih Opsi Customer
-                        </label>
-                        <div class="customer-option-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="customer_option" id="existing" value="existing" checked>
-                                <label class="form-check-label" for="existing">
-                                    Pilih Customer yang Sudah Ada
-                                </label>
+                    <div class="mobil-preview">
+                        @if($mobil->foto) <img src="{{ asset('storage/' . $mobil->foto) }}" alt="{{ $mobil->nama_mobil }}">
+                        @else
+                            <div style="width: 80px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-car fa-lg"></i>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="customer_option" id="new" value="new">
-                                <label class="form-check-label" for="new">
-                                    Tambah Customer Baru
-                                </label>
-                            </div>
+                        @endif
+                        <div class="mobil-info">
+                            <h4>{{ $mobil->nama_mobil }}</h4>
+                            <p>Harga Sewa: <strong>Rp {{ number_format($mobil->harga_per_hari, 0, ',', '.') }}</strong> / hari</p>
                         </div>
                     </div>
 
-                    <!-- Existing Customer Selection -->
-                    <div id="existingCustomerSection">
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-user mr-2"></i>Pilih Customer
-                            </label>
-                            <div class="select-wrapper">
-                                <select name="customer_id" class="form-control" required>
-                                    <option value="">-- Pilih Customer --</option>
-                                    @foreach($customers as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->nama }} ({{ $customer->nik }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <label class="form-label">Tipe Customer</label>
+                    <div class="customer-option-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="customer_type" id="existing" value="existing" checked>
+                            <label class="form-check-label fw-bold" for="existing">Customer Lama</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="customer_type" id="new" value="new">
+                            <label class="form-check-label fw-bold" for="new">Customer Baru</label>
                         </div>
                     </div>
 
-                    <!-- New Customer Form -->
+                    <div id="existingCustomerSection" class="form-group">
+                        <label class="form-label">Pilih Customer</label>
+                        <select name="customer_id" class="form-select">
+                            <option value="" disabled selected>-- Pilih Nama Customer --</option>
+                            @foreach($customers as $c)
+                                <option value="{{ $c->id }}">{{ $c->nama }} ({{ $c->nik }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div id="newCustomerSection" style="display: none;">
                         <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-user mr-2"></i>Nama Lengkap
-                            </label>
-                            <input type="text" name="nama" class="form-control" placeholder="Masukkan nama sesuai KTP">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" name="nama" class="form-control" placeholder="Input nama lengkap">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-id-card mr-2"></i>NIK
-                            </label>
-                            <input type="number" name="nik" class="form-control" placeholder="Contoh: 3201xxxxxxxxxxxx">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-phone mr-2"></i>Nomor Telepon
-                            </label>
-                            <input type="text" name="no_telp" class="form-control" placeholder="Contoh: 08123456789">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-map-marker-alt mr-2"></i>Alamat
-                            </label>
-                            <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan alamat domisili"></textarea>
+                            <label class="form-label">NIK</label>
+                            <input type="number" name="nik" class="form-control" placeholder="Input nomor NIK">
                         </div>
                     </div>
 
-                    <!-- Date Selection -->
                     <div class="date-input-group">
                         <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-calendar-plus mr-2"></i>Tanggal Sewa
-                            </label>
-                            <input type="date" name="tanggal_sewa" class="form-control" id="tanggal_sewa" required min="{{ date('Y-m-d') }}">
+                            <label for="tanggal_sewa" class="form-label">Tanggal Sewa</label>
+                            <input type="date" name="tanggal_sewa" id="tanggal_sewa" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-calendar-minus mr-2"></i>Tanggal Kembali
-                            </label>
-                            <input type="date" name="tanggal_kembali" class="form-control" id="tanggal_kembali" required>
+                            <label for="tanggal_kembali" class="form-label">Tanggal Kembali</label>
+                            <input type="date" name="tanggal_kembali" id="tanggal_kembali" class="form-control" required>
                         </div>
                     </div>
 
-                    <!-- Price Summary -->
-                    <div class="price-summary" id="priceSummary" style="display: none;">
-                        <h5><i class="fas fa-calculator mr-2"></i>Ringkasan Biaya</h5>
+                    <div id="priceSummary" class="price-summary">
+                        <h5>Ringkasan Biaya</h5>
                         <div class="price-row">
-                            <span>Harga per hari:</span>
-                            <span>Rp {{ number_format($mobil->harga_per_hari, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="price-row">
-                            <span>Lama sewa:</span>
+                            <span>Durasi Sewa</span>
                             <span id="lamaSewa">0 hari</span>
                         </div>
+                        <div class="price-row">
+                            <span>Harga per Hari</span>
+                            <span>Rp {{ number_format($mobil->harga_per_hari, 0, ',', '.') }}</span>
+                        </div>
                         <div class="price-row total">
-                            <span>Total:</span>
+                            <span>Total Pembayaran</span>
                             <span id="totalHarga">Rp 0</span>
                         </div>
                     </div>
 
-                    <!-- Buttons -->
-                    <div class="d-flex gap-3 mt-4">
-                        <a href="{{ route('mobil.index') }}" class="btn-cancel flex-fill text-center">
-                            <i class="fas fa-arrow-left mr-2"></i>Batal
-                        </a>
-                        <button type="submit" class="btn-submit flex-fill">
-                            <i class="fas fa-check mr-2"></i>Konfirmasi Sewa
-                        </button>
+                    <button type="submit" class="btn-submit mt-4">
+                        <i class="fas fa-check-circle me-2"></i>Konfirmasi Penyewaan
+                    </button>
+                    <div class="text-center mt-3">
+                        <a href="{{ route('mobil.index') }}" class="text-muted text-decoration-none small">Kembali ke Daftar Mobil</a>
                     </div>
                 </form>
             </div>
@@ -367,53 +323,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const priceSummary = document.getElementById('priceSummary');
     const lamaSewa = document.getElementById('lamaSewa');
     const totalHarga = document.getElementById('totalHarga');
-    const hargaPerHari = {{ $mobil->harga_per_hari }};
+    const hargaPerHari = ("{{ $mobil->harga_per_hari }}");
 
-    // Customer option toggle
     const existingRadio = document.getElementById('existing');
     const newRadio = document.getElementById('new');
     const existingSection = document.getElementById('existingCustomerSection');
     const newSection = document.getElementById('newCustomerSection');
 
+    // 1. Fungsi Toggle Customer
     function toggleCustomerSection() {
         if (existingRadio.checked) {
             existingSection.style.display = 'block';
             newSection.style.display = 'none';
-            // Make new customer fields not required
-            document.querySelectorAll('#newCustomerSection input, #newCustomerSection textarea').forEach(el => el.required = false);
-            document.querySelector('select[name="customer_id"]').required = true;
+            document.querySelectorAll('#newCustomerSection input').forEach(el => el.required = false);
+            existingSection.querySelector('select').required = true;
         } else {
             existingSection.style.display = 'none';
             newSection.style.display = 'block';
-            // Make new customer fields required
-            document.querySelectorAll('#newCustomerSection input, #newCustomerSection textarea').forEach(el => el.required = true);
-            document.querySelector('select[name="customer_id"]').required = false;
+            document.querySelectorAll('#newCustomerSection input').forEach(el => el.required = true);
+            existingSection.querySelector('select').required = false;
         }
     }
 
     existingRadio.addEventListener('change', toggleCustomerSection);
     newRadio.addEventListener('change', toggleCustomerSection);
 
+    // 2. Fungsi Hitung Harga Otomatis
     function calculatePrice() {
-        const start = new Date(tanggalSewa.value);
-        const end = new Date(tanggalKembali.value);
+        if (tanggalSewa.value && tanggalKembali.value) {
+            const start = new Date(tanggalSewa.value);
+            const end = new Date(tanggalKembali.value);
 
-        if (start && end && end > start) {
-            const diffTime = Math.abs(end - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (end > start) {
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            lamaSewa.textContent = diffDays + ' hari';
-            totalHarga.textContent = 'Rp ' + (diffDays * hargaPerHari).toLocaleString('id-ID');
-            priceSummary.style.display = 'block';
-        } else {
-            priceSummary.style.display = 'none';
+                lamaSewa.textContent = diffDays + ' hari';
+                totalHarga.textContent = 'Rp ' + (diffDays * hargaPerHari).toLocaleString('id-ID');
+                priceSummary.style.display = 'block';
+            } else {
+                priceSummary.style.display = 'none';
+            }
         }
     }
 
     tanggalSewa.addEventListener('change', calculatePrice);
     tanggalKembali.addEventListener('change', calculatePrice);
 
-    // Set minimum return date
+    // Set min date hari ini
+    const today = new Date().toISOString().split('T')[0];
+    tanggalSewa.min = today;
+    
     tanggalSewa.addEventListener('change', function() {
         tanggalKembali.min = this.value;
     });
