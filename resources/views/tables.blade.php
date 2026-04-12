@@ -33,28 +33,44 @@
                 </tfoot>
                 <tbody>
                     <tr>
-                        <td>Tiger Nixon</td>
-                        <td>System Architect</td>
-                        <td>Edinburgh</td>
-                        <td>61</td>
-                        <td>2011/04/25</td>
-                        <td>$320,800</td>
+                        <td>Rizki Nur Islami</td>
+                        <td>Developer</td>
+                        <td>Jakarta</td>
+                        <td>22</td>
+                        <td>2024/01/15</td>
+                        <td>$5,000,000</td>
                     </tr>
                     <tr>
-                        <td>Garrett Winters</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td>63</td>
-                        <td>2011/07/25</td>
-                        <td>$170,750</td>
+                        <td>Aqil Al Adli</td>
+                        <td>UI/UX Designer</td>
+                        <td>Bandung</td>
+                        <td>23</td>
+                        <td>2024/02/10</td>
+                        <td>$4,500,000</td>
                     </tr>
                     <tr>
-                        <td>Ashton Cox</td>
-                        <td>Junior Technical Author</td>
-                        <td>San Francisco</td>
-                        <td>66</td>
-                        <td>2009/01/12</td>
-                        <td>$86,000</td>
+                        <td>Flora Rizky Abelia</td>
+                        <td>Project Manager</td>
+                        <td>Surabaya</td>
+                        <td>24</td>
+                        <td>2024/03/05</td>
+                        <td>$6,000,000</td>
+                    </tr>
+                    <tr>
+                        <td>Tiara Irawati Hutapea</td>
+                        <td>QA Tester</td>
+                        <td>Yogyakarta</td>
+                        <td>21</td>
+                        <td>2024/01/20</td>
+                        <td>$4,000,000</td>
+                    </tr>
+                    <tr>
+                        <td>Nova Eliza</td>
+                        <td>Backend Developer</td>
+                        <td>Medan</td>
+                        <td>23</td>
+                        <td>2024/02/18</td>
+                        <td>$5,500,000</td>
                     </tr>
                 </tbody>
             </table>
