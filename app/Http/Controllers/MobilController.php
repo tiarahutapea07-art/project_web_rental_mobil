@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mobil;
+use App\Models\Rental;
 use Illuminate\Http\Request;
 
 class MobilController extends Controller
 {
     public function index()
     {
-        $mobils = Mobil ::all();
-        return view('mobil.index', compact('mobils'));
+        $mobils = Mobil::all();
+        $rentalAktif = Rental::where('status', 'aktif')->pluck('mobil_id')->toArray();
+        return view('mobil.index', compact('mobils', 'rentalAktif'));
     }
 
     public function create()
