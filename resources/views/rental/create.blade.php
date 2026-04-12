@@ -80,10 +80,12 @@
     }
 
     .customer-option-group .form-check {
-        padding: 1rem;
+        padding: 1rem 1rem 1rem 2.5rem; /* kiri lebih besar buat ruang radio button */
         border: 1px solid #e9ecef;
         border-radius: 14px;
         background: #f8f9fa;
+        margin: 0;
+        cursor: pointer;
     }
 
     .form-label {
@@ -139,32 +141,32 @@
     }
 
     .btn-submit {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #6c757d;
         border: none;
         color: white;
-        padding: 1rem 2rem;
+        padding: 0.75rem 2rem;
         border-radius: 10px;
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 1rem;
         transition: all 0.3s ease;
         width: 100%;
     }
 
     .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+         background: #5a6268;
         color: white;
+        transform: translateY(-2px);
     }
 
     .btn-cancel {
         background: #6c757d;
         border: none;
         color: white;
-        padding: 1rem 2rem;
+        padding: 0.75rem 2rem;
         border-radius: 10px;
         font-weight: 600;
         text-decoration: none;
-        display: inline-block;
+        display: block;
         transition: all 0.3s ease;
     }
 
@@ -245,10 +247,10 @@
                     </div>
 
                     <label class="form-label">Tipe Customer</label>
-                    <div class="customer-option-group">
-                        <div class="form-check">
+                    <div class="customer-option-group ">
+                        <div class="form-check ">
                             <input class="form-check-input" type="radio" name="customer_type" id="existing" value="existing" checked>
-                            <label class="form-check-label fw-bold" for="existing">Customer Lama</label>
+                            <label class="form-check-label fw-bold mb-0" for="existing" >Customer Lama</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="customer_type" id="new" value="new">
@@ -256,9 +258,9 @@
                         </div>
                     </div>
 
-                    <div id="existingCustomerSection" class="form-group">
+                    <div id="existingCustomerSection" class="form-group" style="margin-top: 1.5rem;">
                         <label class="form-label">Pilih Customer</label>
-                        <select name="customer_id" class="form-select">
+                        <select name="customer_id" class="form-control">
                             <option value="" disabled selected>-- Pilih Nama Customer --</option>
                             @foreach($customers as $c)
                                 <option value="{{ $c->id }}">{{ $c->nama }} ({{ $c->nik }})</option>
@@ -303,12 +305,15 @@
                             <span id="totalHarga">Rp 0</span>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn-submit mt-4">
-                        <i class="fas fa-check-circle me-2"></i>Konfirmasi Penyewaan
-                    </button>
-                    <div class="text-center mt-3">
-                        <a href="{{ route('mobil.index') }}" class="text-muted text-decoration-none small">Kembali ke Daftar Mobil</a>
+                    
+                    
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="{{ route('mobil.index') }}" class="btn-cancel text-center" style="flex: 1; padding: 0.75rem 2rem;">
+                            <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar Mobil
+                        </a>
+                        <button type="submit" class="btn-submit" style="flex: 1; padding: 0.75rem 2rem;">
+                            <i class="fas fa-check-circle me-2"></i>Konfirmasi Penyewaan
+                        </button>
                     </div>
                 </form>
             </div>
@@ -323,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const priceSummary = document.getElementById('priceSummary');
     const lamaSewa = document.getElementById('lamaSewa');
     const totalHarga = document.getElementById('totalHarga');
-    const hargaPerHari = ("{{ $mobil->harga_per_hari }}");
+    const hargaPerHari = parseFloat("{{ $mobil->harga_per_hari }}");
 
     const existingRadio = document.getElementById('existing');
     const newRadio = document.getElementById('new');
