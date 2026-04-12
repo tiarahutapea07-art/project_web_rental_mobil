@@ -37,6 +37,8 @@ public function store(Request $request)
     // update status rental kalau lunas
     if ($status == 'lunas') {
         $rental->update(['status' => 'selesai']);
+        // Kembalikan mobil ke status tersedia
+        $rental->mobil->update(['status' => 'tersedia']);
     }
 
     return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan');

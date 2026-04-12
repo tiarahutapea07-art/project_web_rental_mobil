@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MobilController;
 use App\Models\Mobil;
+use App\Models\Rental;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransaksiController;
 
@@ -26,7 +27,7 @@ Route::get('/dashboard', function () {
     }
     $totalMobil = Mobil::count();
     $mobilTersedia = Mobil::where('status', 'tersedia')->count();
-    $mobilDisewa = Mobil::where('status', 'tidak tersedia')->count();
+    $mobilDisewa = Rental::where('status', 'aktif')->count();
     return view('dashboard', compact('totalMobil', 'mobilTersedia', 'mobilDisewa'));
 })->name('dashboard');
 
