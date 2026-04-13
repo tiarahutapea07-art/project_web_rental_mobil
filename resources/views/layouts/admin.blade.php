@@ -22,8 +22,75 @@
     <link href="{{ asset ('sbadmin2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- BARU -->
+      <style>
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            background: linear-gradient(180deg, #1A2744 10%, #243460 100%) !important;
+        }
+        .sidebar-brand {
+            background: #111d36 !important;
+        }
+        .nav-item .nav-link[aria-expanded="true"],
+        .nav-item.active .nav-link {
+            background-color: rgba(245, 158, 11, 0.15) !important;
+            border-left: 3px solid #F59E0B !important;
+        }
+        .sidebar .nav-item .nav-link:hover {
+            background-color: rgba(255,255,255,0.08) !important;
+        }
+        #sidebarToggle {
+            background-color: rgba(245, 158, 11, 0.3) !important;
+        }
+        #sidebarToggle:hover {
+            background-color: #F59E0B !important;
+        }
+
+        /* ===== TOPBAR BUTTON ===== */
+        .navbar-search .btn-primary,
+        .btn-primary {
+            background-color: #1A2744 !important;
+            border-color: #1A2744 !important;
+        }
+        .btn-primary:hover {
+            background-color: #243460 !important;
+            border-color: #243460 !important;
+        }
+
+        /* ===== BACKGROUND CONTENT ===== */
+        #content-wrapper {
+            background-color: #F4F6F9 !important;
+        }
+
+        /* ===== STAT CARDS ===== */
+        .bg-primary {
+            background: linear-gradient(135deg, #1A2744, #243460) !important;
+        }
+        .bg-info {
+            background: linear-gradient(135deg, #0f6e56, #1D9E75) !important;
+        }
+        .bg-warning {
+            background-color: #F59E0B !important;
+            border-color: #F59E0B !important;
+        }
+
+        /* ===== MISC ===== */
+        .icon-circle.bg-primary {
+            background: #1A2744 !important;
+        }
+        .text-primary {
+            color: #1A2744 !important;
+        }
+        a { color: #1A2744; }
+        a:hover { color: #F59E0B; }
+        .scroll-to-top {
+            background-color: #1A2744 !important;
+        }
+    </style>
+    <!-- ✅ SAMPAI SINI -->
 
 </head>
+
 
 <body id="page-top">
 

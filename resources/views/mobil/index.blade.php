@@ -20,7 +20,7 @@
     
     .img-mobil-container {
         height: 240px;
-        background: linear-gradient(135deg, #e9eaed 0%, #e9e9ec 100%);
+        background: linear-gradient(135deg, #EEF1F8 0%, #dde3f0 100%);
         padding: 2rem;
         position: relative;
         display: flex;
@@ -72,14 +72,16 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     
+    /* ✅ Badge Tersedia → Amber */
     .status-badge.available {
-        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
-        color: white;
+        background: linear-gradient(135deg, #F59E0B 0%, #d97706 100%);
+        color: #7C3E00;
     }
     
+    /* ✅ Badge Disewa → Navy muda */
     .status-badge.unavailable {
-        background: linear-gradient(135deg, #6b89ff 0%, #8a92a5 100%);
-        color: white;
+        background: linear-gradient(135deg, #243460 0%, #1A2744 100%);
+        color: #B8C8F0;
     }
     
     .card-body {
@@ -91,15 +93,16 @@
     .mobil-name {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #2c3e50;
+        color: #1A2744;
         margin-bottom: 0.5rem;
         line-height: 1.3;
     }
     
+    /* ✅ Harga → Amber */
     .mobil-price {
         font-size: 1.6rem;
         font-weight: 800;
-        color: #667eea;
+        color: #d97706;
         margin-bottom: 1rem;
     }
     
@@ -114,19 +117,20 @@
         align-items: center;
         margin-bottom: 0.8rem;
         padding-bottom: 0.8rem;
-        border-bottom: 1px solid #ecf0f1;
+        border-bottom: 1px solid #EEF1F8;
         font-size: 0.9rem;
         color: #555;
     }
     
+    /* ✅ Icon info → Navy */
     .info-item i {
         width: 20px;
-        color: #667eea;
+        color: #1A2744;
         margin-right: 10px;
     }
     
     .info-item strong {
-        color: #2c3e50;
+        color: #1A2744;
     }
     
     .action-buttons {
@@ -136,9 +140,10 @@
         gap: 8px;
     }
     
+    /* ✅ Tombol Sewa → Navy */
     .btn-sewa {
         flex: 1;
-        background: linear-gradient(135deg, #667eea 0%, #9471b8 100%);
+        background: linear-gradient(135deg, #1A2744 0%, #243460 100%);
         border: none;
         color: white;
         border-radius: 8px;
@@ -148,40 +153,44 @@
     
     .btn-sewa:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
-        color: white;
+        box-shadow: 0 8px 16px rgba(26, 39, 68, 0.4);
+        color: #F59E0B;
     }
     
+    /* ✅ Tombol Edit → Amber (tetap, cocok) */
     .btn-edit {
         flex: 1;
-        background: #f39c12;
+        background: #F59E0B;
         border: none;
-        color: white;
+        color: #181715;
         border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease;
     }
     
     .btn-edit:hover {
-        background: #e67e22;
+        background: #d97706;
         transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(243, 156, 18, 0.4);
-        color: white;
+        box-shadow: 0 8px 16px rgba(245, 158, 11, 0.4);
+        color: #361c02;
     }
     
     .btn-delete {
-        color: #5191c2;
+        color: #141b28;
         font-size: 0.85rem;
         padding: 0.3rem 0.8rem;
         text-decoration: none !important;
         transition: all 0.3s ease;
         cursor: pointer;
+        background: none;
+        border: none;
     }
     
     .btn-delete:hover {
-        color: #ea8484;
+        color: #e74c3c;
     }
     
+    /* ✅ Stat cards → Navy + Amber + Navy muda */
     .stats-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -190,7 +199,7 @@
     }
     
     .stat-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1A2744 0%, #243460 100%);
         color: white;
         padding: 1.5rem;
         border-radius: 12px;
@@ -199,29 +208,43 @@
     
     .stat-card h6 {
         font-size: 0.9rem;
-        opacity: 0.9;
+        opacity: 0.8;
         margin-bottom: 0.5rem;
+        color: #B8C8F0;
     }
     
     .stat-card .number {
         font-size: 2.2rem;
         font-weight: 800;
+        color: white;
     }
     
+    /* ✅ Card Tersedia → Amber */
     .stat-card.available {
-        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+        background: linear-gradient(135deg, #F59E0B 0%, #d97706 100%);
     }
     
+    .stat-card.available h6 {
+        color: #7C3E00;
+    }
+
+    .stat-card.available .number {
+        color: #7C3E00;
+    }
+    
+    /* ✅ Card Disewa → Navy lebih muda */
     .stat-card.unavailable {
-        background: linear-gradient(135deg, #5c74c2 0%, #0e4780 100%);
+        background: linear-gradient(135deg, #243460 0%, #1a3a6e 100%);
     }
     
+    /* ✅ Header section → putih bersih dengan border */
     .header-section {
-        background: linear-gradient(135deg, #b0bbca 0%, #b0bbca  100%);
+        background: #ffffff;
         padding: 2rem;
         border-radius: 16px;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        border-left: 4px solid #F59E0B;
     }
 </style>
 
