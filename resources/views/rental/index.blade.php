@@ -276,7 +276,7 @@
             pageLength: 10,
             order: [[0, 'asc']],
             columnDefs: [
-                { orderable: false, targets: [ 2, 3, 4, 6, 7, 8] }
+                { orderable: false, targets: [ 0, 3, 4, 6, 7, 8] }
             ]
         });
     });

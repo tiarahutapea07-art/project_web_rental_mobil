@@ -34,7 +34,9 @@ Route::get('/dashboard', function () {
 // --- 2. HALAMAN STATIS TEMPLATE (PENTING) ---
 // Rute bersih untuk charts dan tables (tanpa .html)
 Route::get('/charts', function () { return view('charts'); })->name('charts');
-Route::get('/tables', function () { return view('tables'); })->name('tables');
+Route::get('/tables', [\App\Http\Controllers\UserController::class, 'index'])->name('tables');
+Route::post('/tables', [\App\Http\Controllers\UserController::class, 'store'])->name('user.store');
+Route::delete('/tables/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
 
 // --- 3. MANAJEMEN MOBIL ---
 Route::get('/mobil', [MobilController::class, 'index'])->name('mobil.index');

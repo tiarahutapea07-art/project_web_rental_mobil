@@ -1,87 +1,213 @@
 @extends('layouts.admin')
 
 @section('content')
-<h1 class="h3 mb-4 text-gray-800">Tables</h1>
+<style>
+    .card-box {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
 
-<!-- DataTales Example -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+    .card-box-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #2b3e84;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f0f2f5;
+    }
+
+    #userTable thead th {
+        background: white;
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-top: none;
+        border-bottom: 2px solid #dee2e6;
+        padding: 0.85rem 0.75rem;
+    }
+
+    #userTable tbody tr:hover { background: #f8f9fa; }
+
+    #userTable tbody td {
+        padding: 0.85rem 0.75rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #dee2e6;
+        color: #2c3e50;
+        font-size: 0.9rem;
+    }
+
+    .role-badge {
+        padding: 0.3rem 0.85rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.78rem;
+        color: white;
+        display: inline-block;
+    }
+
+    .role-admin { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .role-user  { background:  #227f94 }
+
+    .btn-delete {
+        background:  #e74a3b;
+        border: none;
+        color: white;
+        padding: 0.28rem 0.7rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-delete:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(231,74,59,0.4);
+        color: white;
+    }
+
+    .form-control-sm { font-size: 0.85rem; }
+
+    .dataTables_wrapper { font-size: 0.875rem; color: #2c3e50; }
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 0.28rem 0.55rem;
+        font-size: 0.875rem;
+        outline: none;
+    }
+    .dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #555; padding-top: 0.75rem; }
+    .dataTables_wrapper .dataTables_paginate { padding-top: 0.5rem; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border: 1px solid #dee2e6 !important;
+        border-radius: 4px !important;
+        padding: 0.2rem 0.55rem !important;
+        margin: 0 2px;
+        font-size: 0.82rem;
+        color: #555 !important;
+        background: white !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #5f6ee4 !important;
+        color: white !important;
+        border: 1px solid #92a1e4 !important;
+        font-weight: 700;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f0f0f0 !important;
+        color: #333 !important;
+        border: 1px solid #ccc !important;
+    }
+</style>
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-3">
+        <i class="fas fa-check-circle"></i> {{ session('success') }}
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    <tr>
-                        <td>Rizki Nur Islami</td>
-                        <td>Developer</td>
-                        <td>Jakarta</td>
-                        <td>22</td>
-                        <td>2024/01/15</td>
-                        <td>$5,000,000</td>
-                    </tr>
-                    <tr>
-                        <td>Aqil Al Adli</td>
-                        <td>UI/UX Designer</td>
-                        <td>Bandung</td>
-                        <td>23</td>
-                        <td>2024/02/10</td>
-                        <td>$4,500,000</td>
-                    </tr>
-                    <tr>
-                        <td>Flora Rizky Abelia</td>
-                        <td>Project Manager</td>
-                        <td>Surabaya</td>
-                        <td>24</td>
-                        <td>2024/03/05</td>
-                        <td>$6,000,000</td>
-                    </tr>
-                    <tr>
-                        <td>Tiara Irawati Hutapea</td>
-                        <td>QA Tester</td>
-                        <td>Yogyakarta</td>
-                        <td>21</td>
-                        <td>2024/01/20</td>
-                        <td>$4,000,000</td>
-                    </tr>
-                    <tr>
-                        <td>Nova Eliza Oktaria</td>
-                        <td>Backend Developer</td>
-                        <td>Medan</td>
-                        <td>23</td>
-                        <td>2024/02/18</td>
-                        <td>$5,500,000</td>
-                    </tr>
-                </tbody>
-            </table>
+@endif
+
+{{-- Form Tambah Pengguna --}}
+<div class="card-box">
+    <div class="card-box-title">Tambah Pengguna</div>
+    <form action="{{ route('user.store') }}" method="POST">
+        @csrf
+        <div class="row">
+            <div class="col-md-3 mb-2">
+                <input type="text" name="name" class="form-control form-control-sm" placeholder="Nama" required>
+            </div>
+            <div class="col-md-3 mb-2">
+                <input type="email" name="email" class="form-control form-control-sm" placeholder="Email" required>
+            </div>
+            <div class="col-md-2 mb-2">
+                <input type="password" name="password" class="form-control form-control-sm" placeholder="Password" required>
+            </div>
+            <div class="col-md-2 mb-2">
+                <select name="role" class="form-control form-control-sm" required>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="col-md-2 mb-2">
+                <button type="submit" class="btn btn-primary btn-sm w-100">
+                    <i class="fas fa-plus mr-1"></i>Tambah
+                </button>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 
-<!-- Page level plugins -->
-<script src="{{ asset('sbadmin2/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('sbadmin2/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+{{-- Tabel Pengguna --}}
+<div class="card-box">
+    <div class="card-box-title">Daftar Pengguna</div>
+    <table id="userTable" class="table w-100">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($users as $i => $user)
+            <tr>
+                <td>{{ $i + 1 }}</td>
+                <td><i class="fas fa-user-circle mr-1" style="color:#667eea"></i>{{ $user->name }}</td>
+                <td>{{ $user->email }}</td>
+                <td>
+                    <span class="role-badge role-{{ $user->role }}">
+                        {{ ucfirst($user->role) }}
+                    </span>
+                </td>
+                <td>
+                    <form action="{{ route('user.destroy', $user->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-delete"
+                            onclick="return confirm('Yakin hapus pengguna ini?');">
+                            <i class="fas fa-trash mr-1"></i>Hapus
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="fas fa-users fa-2x mb-2 d-block"></i>
+                    Belum ada pengguna.
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 
-<!-- Page level custom scripts -->
-<script src="{{ asset('sbadmin2/js/demo/datatables-demo.js') }}"></script>
+@push('scripts')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#userTable').DataTable({
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                infoEmpty: "Showing 0 to 0 of 0 entries",
+                paginate: { previous: "Previous", next: "Next" },
+                emptyTable: "Tidak ada data pengguna"
+            },
+            pageLength: 10,
+            columnDefs: [{ orderable: false, targets: '_all' }]
+        });
+    });
+</script>
+@endpush
+
 @endsection
