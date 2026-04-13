@@ -65,7 +65,7 @@
                         <td>$4,000,000</td>
                     </tr>
                     <tr>
-                        <td>Nova Eliza</td>
+                        <td>Nova Eliza Oktaria</td>
                         <td>Backend Developer</td>
                         <td>Medan</td>
                         <td>23</td>

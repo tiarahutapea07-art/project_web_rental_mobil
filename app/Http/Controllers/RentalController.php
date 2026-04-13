@@ -11,80 +11,72 @@ use Carbon\Carbon;
 class RentalController extends Controller
 {
     public function create($mobil_id)
-    {
-        $mobil = Mobil::findOrFail($mobil_id);
-        if ($mobil->status !== 'tersedia') {
-            return redirect('/mobil')->with('error', 'Mobil tidak tersedia untuk disewa.');
-        }
-        $customers = Customer::all();
-        return view('rental.create', compact('mobil', 'customers'));
+{
+    $mobil = Mobil::findOrFail($mobil_id);
+    if ($mobil->status !== 'tersedia') {
+        return redirect('/mobil')->with('error', 'Mobil tidak tersedia untuk disewa.');
+    }
+    // Hapus $customers karena tidak dipakai lagi
+    return view('rental.create', compact('mobil'));
+}
+
+public function store(Request $request)
+{
+    $request->validate([
+        'mobil_id'        => 'required|exists:mobils,id',
+        'nama'            => 'required|string|max:255',
+        'nik'             => 'required|numeric|digits:16',
+        'tanggal_sewa'    => 'required|date|after_or_equal:today',
+        'tanggal_kembali' => 'required|date|after:tanggal_sewa',
+    ]);
+
+    $mobil = Mobil::findOrFail($request->mobil_id);
+    if ($mobil->status !== 'tersedia') {
+        return redirect('/mobil')->with('error', 'Mobil tidak tersedia untuk disewa.');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'mobil_id' => 'required|exists:mobils,id',
-            'customer_option' => 'required|in:existing,new',
-            'customer_id' => 'required_if:customer_option,existing|exists:customers,id',
-            'nama' => 'required_if:customer_option,new|string|max:255',
-            'nik' => 'required_if:customer_option,new|numeric|digits:16|unique:customers,nik',
-            'no_telp' => 'required_if:customer_option,new|string|max:15',
-            'alamat' => 'required_if:customer_option,new|string|max:500',
-            'tanggal_sewa' => 'required|date|after_or_equal:today',
-            'tanggal_kembali' => 'required|date|after:tanggal_sewa',
-        ]);
+    // Cek apakah customer dengan NIK ini sudah ada, kalau belum buat baru
+    $customer = Customer::firstOrCreate(
+        ['nik' => $request->nik],
+        [
+            'nama' => $request->nama,
+            'no_telp' => $request->no_telp,
+        'alamat'  => $request->alamat,]
+    );
 
-        $mobil = Mobil::findOrFail($request->mobil_id);
-        if ($mobil->status !== 'tersedia') {
-            return redirect('/mobil')->with('error', 'Mobil tidak tersedia untuk disewa.');
-        }
+    $tanggalSewa    = Carbon::parse($request->tanggal_sewa);
+    $tanggalKembali = Carbon::parse($request->tanggal_kembali);
+    $lamaSewa       = $tanggalSewa->diffInDays($tanggalKembali);
+    $totalHarga     = $lamaSewa * $mobil->harga_per_hari;
 
-        // Handle customer
-        if ($request->customer_option === 'existing') {
-            $customer_id = $request->customer_id;
-        } else {
-            // Create new customer
-            $customer = Customer::create([
-                'nama' => $request->nama,
-                'nik' => $request->nik,
-                'no_telp' => $request->no_telp,
-                'alamat' => $request->alamat,
-            ]);
-            $customer_id = $customer->id;
-        }
+    Rental::create([
+        'mobil_id'        => $request->mobil_id,
+        'customer_id'     => $customer->id_customer,
+        'tanggal_sewa'    => $request->tanggal_sewa,
+        'tanggal_kembali' => $request->tanggal_kembali,
+        'lama_sewa'       => $lamaSewa,
+        'total_harga'     => $totalHarga,
+        'status'          => 'aktif',
+    ]);
 
-        $tanggalSewa = Carbon::parse($request->tanggal_sewa);
-        $tanggalKembali = Carbon::parse($request->tanggal_kembali);
-        $lamaSewa = $tanggalSewa->diffInDays($tanggalKembali);
-        $totalHarga = $lamaSewa * $mobil->harga_per_hari;
+    $mobil->update(['status' => 'tidak tersedia']);
 
-        Rental::create([
-            'mobil_id' => $request->mobil_id,
-            'customer_id' => $customer_id,
-            'tanggal_sewa' => $request->tanggal_sewa,
-            'tanggal_kembali' => $request->tanggal_kembali,
-            'lama_sewa' => $lamaSewa,
-            'total_harga' => $totalHarga,
-            'status' => 'aktif',
-        ]);
+    return redirect('/mobil')->with('success', 'Mobil berhasil disewa!');
+}
 
-        // Update status mobil
-        $mobil->update(['status' => 'tidak tersedia']);
+public function index()
+{
+    $rentals = Rental::with('mobil', 'customer')->get();
+    return view('rental.index', compact('rentals'));
+}
 
-        return redirect('/mobil')->with('success', 'Mobil berhasil disewa!');
-    }
+public function return($id)
+{
+    $rental = Rental::findOrFail($id);
+    $rental->update(['status' => 'selesai']);
+    $rental->mobil->update(['status' => 'tersedia']);
+    return redirect('/rental')->with('success', 'Mobil berhasil dikembalikan.');
+}
 
-    public function index()
-    {
-        $rentals = Rental::with('mobil', 'customer')->get();
-        return view('rental.index', compact('rentals'));
-    }
 
-    public function return($id)
-    {
-        $rental = Rental::findOrFail($id);
-        $rental->update(['status' => 'selesai']);
-        $rental->mobil->update(['status' => 'tersedia']);
-        return redirect('/rental')->with('success', 'Mobil berhasil dikembalikan.');
-    }
 }

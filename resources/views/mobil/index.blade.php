@@ -20,7 +20,7 @@
     
     .img-mobil-container {
         height: 240px;
-        background: linear-gradient(135deg, #3f59cd 0%, #7d73e8 100%);
+        background: linear-gradient(135deg, #e9eaed 0%, #e9e9ec 100%);
         padding: 2rem;
         position: relative;
         display: flex;

@@ -65,9 +65,11 @@ class MobilController extends Controller
         ]);
         
         $mobil = Mobil::findOrFail($id);
-        $mobil->update($validated);
-        
-        return redirect('/mobil')->with('success', 'Data mobil berhasil diperbarui!');
+        $mobil->update(['status' => 'tidak tersedia']);
+
+dd('SUKSES - data tersimpan'); // ← tambahkan ini sementara
+
+return redirect('/mobil')->with('success', 'Mobil berhasil disewa!');
     }
             
             public function edit($id)

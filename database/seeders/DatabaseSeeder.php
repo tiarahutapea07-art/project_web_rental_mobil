@@ -140,7 +140,7 @@ class DatabaseSeeder extends Seeder
                 'nama_mobil' => 'Toyota Avanza Premium',
                 'harga_per_hari' => 500000,
                 'no_polisi' => 'B 17001 AVP',
-                'gambar' => 'toyota_avanza.jpg',
+                'gambar' => 'toyota_avanza.png',
                 'status' => 'tersedia'
             ],
             [

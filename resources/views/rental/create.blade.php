@@ -72,22 +72,6 @@
         margin-bottom: 1.5rem;
     }
 
-    .customer-option-group {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-        margin-top: 0.75rem;
-    }
-
-    .customer-option-group .form-check {
-        padding: 1rem 1rem 1rem 2.5rem; /* kiri lebih besar buat ruang radio button */
-        border: 1px solid #e9ecef;
-        border-radius: 14px;
-        background: #f8f9fa;
-        margin: 0;
-        cursor: pointer;
-    }
-
     .form-label {
         font-weight: 600;
         color: #2c3e50;
@@ -103,41 +87,14 @@
         transition: all 0.3s ease;
         width: 100%;
         background-color: #fff;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
         box-sizing: border-box;
         line-height: 1.5;
-        min-height: 3.4rem;
-        background-image: none;
-        cursor: pointer;
     }
 
     .form-control:focus {
         border-color: #667eea;
         box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-
-    .select-wrapper {
-        position: relative;
-        width: 100%;
-    }
-
-    .select-wrapper select {
-        padding-right: 3rem;
-        width: 100%;
-    }
-
-    .select-wrapper::after {
-        content: '\f107';
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
-        pointer-events: none;
+        outline: none;
     }
 
     .btn-submit {
@@ -149,11 +106,12 @@
         font-weight: 600;
         font-size: 1rem;
         transition: all 0.3s ease;
-        width: 100%;
+        flex: 1;
+        cursor: pointer;
     }
 
     .btn-submit:hover {
-         background: #5a6268;
+        background: #5a6268;
         color: white;
         transform: translateY(-2px);
     }
@@ -168,6 +126,8 @@
         text-decoration: none;
         display: block;
         transition: all 0.3s ease;
+        flex: 1;
+        text-align: center;
     }
 
     .btn-cancel:hover {
@@ -195,7 +155,7 @@
         background: #f8f9fa;
         border-radius: 10px;
         padding: 1.5rem;
-        margin-top: 2rem;
+        margin-top: 1rem;
         border-left: 4px solid #667eea;
     }
 
@@ -233,8 +193,10 @@
                     @csrf
                     <input type="hidden" name="mobil_id" value="{{ $mobil->id }}">
 
+                    {{-- Info Mobil --}}
                     <div class="mobil-preview">
-                        @if($mobil->foto) <img src="{{ asset('storage/' . $mobil->foto) }}" alt="{{ $mobil->nama_mobil }}">
+                        @if($mobil->foto)
+                            <img src="{{ asset('storage/' . $mobil->foto) }}" alt="{{ $mobil->nama_mobil }}">
                         @else
                             <div style="width: 80px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-car fa-lg"></i>
@@ -246,39 +208,31 @@
                         </div>
                     </div>
 
-                    <label class="form-label">Tipe Customer</label>
-                    <div class="customer-option-group ">
-                        <div class="form-check ">
-                            <input class="form-check-input" type="radio" name="customer_type" id="existing" value="existing" checked>
-                            <label class="form-check-label fw-bold mb-0" for="existing" >Customer Lama</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="customer_type" id="new" value="new">
-                            <label class="form-check-label fw-bold" for="new">Customer Baru</label>
-                        </div>
+                    {{-- Nama Penyewa --}}
+                    <div class="form-group">
+                        <label class="form-label">Nama Penyewa</label>
+                        <input type="text" name="nama" class="form-control" placeholder="Masukkan nama lengkap penyewa" required>
                     </div>
 
-                    <div id="existingCustomerSection" class="form-group" style="margin-top: 1.5rem;">
-                        <label class="form-label">Pilih Customer</label>
-                        <select name="customer_id" class="form-control">
-                            <option value="" disabled selected>-- Pilih Nama Customer --</option>
-                            @foreach($customers as $c)
-                                <option value="{{ $c->id }}">{{ $c->nama }} ({{ $c->nik }})</option>
-                            @endforeach
-                        </select>
+                    {{-- NIK --}}
+                    <div class="form-group">
+                        <label class="form-label">NIK</label>
+                        <input type="number" name="nik" class="form-control" placeholder="Masukkan nomor NIK (16 digit)" required>
                     </div>
 
-                    <div id="newCustomerSection" style="display: none;">
-                        <div class="form-group">
-                            <label class="form-label">Nama Lengkap</label>
-                            <input type="text" name="nama" class="form-control" placeholder="Input nama lengkap">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">NIK</label>
-                            <input type="number" name="nik" class="form-control" placeholder="Input nomor NIK">
-                        </div>
-                    </div>
+                    {{-- No Telp --}}
+<div class="form-group">
+    <label class="form-label">No. Telepon</label>
+    <input type="text" name="no_telp" class="form-control" placeholder="Masukkan nomor telepon" required>
+</div>
 
+{{-- Alamat --}}
+<div class="form-group">
+    <label class="form-label">Alamat</label>
+    <input type="text" name="alamat" class="form-control" placeholder="Masukkan alamat lengkap" required>
+</div>
+
+                    {{-- Tanggal --}}
                     <div class="date-input-group">
                         <div class="form-group">
                             <label for="tanggal_sewa" class="form-label">Tanggal Sewa</label>
@@ -290,8 +244,9 @@
                         </div>
                     </div>
 
-                    <div id="priceSummary" class="price-summary">
-                        <h5>Ringkasan Biaya</h5>
+                    {{-- Ringkasan Biaya --}}
+                    <div id="priceSummary" class="price-summary" style="display: none;">
+                        <h5><i class="fas fa-receipt me-2"></i>Ringkasan Biaya</h5>
                         <div class="price-row">
                             <span>Durasi Sewa</span>
                             <span id="lamaSewa">0 hari</span>
@@ -305,16 +260,17 @@
                             <span id="totalHarga">Rp 0</span>
                         </div>
                     </div>
-                    
-                    
+
+                    {{-- Tombol --}}
                     <div class="d-flex gap-3 mt-4">
-                        <a href="{{ route('mobil.index') }}" class="btn-cancel text-center" style="flex: 1; padding: 0.75rem 2rem;">
-                            <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar Mobil
+                        <a href="{{ route('mobil.index') }}" class="btn-cancel">
+                            <i class="fas fa-arrow-left me-2"></i>Kembali
                         </a>
-                        <button type="submit" class="btn-submit" style="flex: 1; padding: 0.75rem 2rem;">
+                        <button type="submit" class="btn-submit">
                             <i class="fas fa-check-circle me-2"></i>Konfirmasi Penyewaan
                         </button>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -322,7 +278,7 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const tanggalSewa = document.getElementById('tanggal_sewa');
     const tanggalKembali = document.getElementById('tanggal_kembali');
     const priceSummary = document.getElementById('priceSummary');
@@ -330,39 +286,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalHarga = document.getElementById('totalHarga');
     const hargaPerHari = parseFloat("{{ $mobil->harga_per_hari }}");
 
-    const existingRadio = document.getElementById('existing');
-    const newRadio = document.getElementById('new');
-    const existingSection = document.getElementById('existingCustomerSection');
-    const newSection = document.getElementById('newCustomerSection');
+    // Set min tanggal hari ini
+    const today = new Date().toISOString().split('T')[0];
+    tanggalSewa.min = today;
 
-    // 1. Fungsi Toggle Customer
-    function toggleCustomerSection() {
-        if (existingRadio.checked) {
-            existingSection.style.display = 'block';
-            newSection.style.display = 'none';
-            document.querySelectorAll('#newCustomerSection input').forEach(el => el.required = false);
-            existingSection.querySelector('select').required = true;
-        } else {
-            existingSection.style.display = 'none';
-            newSection.style.display = 'block';
-            document.querySelectorAll('#newCustomerSection input').forEach(el => el.required = true);
-            existingSection.querySelector('select').required = false;
-        }
-    }
+    tanggalSewa.addEventListener('change', function () {
+        tanggalKembali.min = this.value;
+        calculatePrice();
+    });
 
-    existingRadio.addEventListener('change', toggleCustomerSection);
-    newRadio.addEventListener('change', toggleCustomerSection);
+    tanggalKembali.addEventListener('change', calculatePrice);
 
-    // 2. Fungsi Hitung Harga Otomatis
     function calculatePrice() {
         if (tanggalSewa.value && tanggalKembali.value) {
             const start = new Date(tanggalSewa.value);
             const end = new Date(tanggalKembali.value);
 
             if (end > start) {
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+                const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
                 lamaSewa.textContent = diffDays + ' hari';
                 totalHarga.textContent = 'Rp ' + (diffDays * hargaPerHari).toLocaleString('id-ID');
                 priceSummary.style.display = 'block';
@@ -371,17 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-
-    tanggalSewa.addEventListener('change', calculatePrice);
-    tanggalKembali.addEventListener('change', calculatePrice);
-
-    // Set min date hari ini
-    const today = new Date().toISOString().split('T')[0];
-    tanggalSewa.min = today;
-    
-    tanggalSewa.addEventListener('change', function() {
-        tanggalKembali.min = this.value;
-    });
 });
 </script>
 @endsection
