@@ -17,6 +17,6 @@ class Transaksi extends Model
     
     public function rental()
     {
-        return $this->belongTo(Rental::class);
+        return $this->belongsTo(Rental::class);
     }
 }

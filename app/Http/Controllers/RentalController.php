@@ -7,6 +7,7 @@ use App\Models\Mobil;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Transaksi;
 
 class RentalController extends Controller
 {
@@ -49,7 +50,7 @@ public function store(Request $request)
     $lamaSewa       = $tanggalSewa->diffInDays($tanggalKembali);
     $totalHarga     = $lamaSewa * $mobil->harga_per_hari;
 
-    Rental::create([
+    $rental = Rental::create([
         'mobil_id'        => $request->mobil_id,
         'customer_id'     => $customer->id_customer,
         'tanggal_sewa'    => $request->tanggal_sewa,
@@ -57,6 +58,12 @@ public function store(Request $request)
         'lama_sewa'       => $lamaSewa,
         'total_harga'     => $totalHarga,
         'status'          => 'aktif',
+    ]);
+
+    Transaksi::create([
+        'rental_id' => $rental->id,
+        'jumlah_bayar' => $totalHarga,
+        'status_bayar' => 'belum',
     ]);
 
     $mobil->update(['status' => 'tidak tersedia']);

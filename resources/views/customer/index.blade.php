@@ -41,10 +41,10 @@
                             <td>{{ $c->no_telp }}</td>
                             <td>{{ $c->alamat }}</td>
                             <td>
-                                <a href="{{ url('/customer/' . $c->id . '/edit') }}" class="btn btn-warning btn-sm">
+                                <a href="{{ url('/customer/' . $c->id_customer . '/edit') }}" class="btn btn-warning btn-sm">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
-                                <form action="{{ url('/customer/' . $c->id) }}" method="POST" style="display:inline;">
+                                <form action="{{ url('/customer/' . $c->id_customer) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm" 
