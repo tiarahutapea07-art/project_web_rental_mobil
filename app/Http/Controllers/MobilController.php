@@ -12,7 +12,7 @@ class MobilController extends Controller
     {
         $mobils = Mobil::all();
         $rentalAktif = Rental::where('status', 'aktif')->pluck('mobil_id')->toArray();
-        return view('mobil.index', compact('mobils', 'rentalAktif'));
+        return view('mobil.index', compact('mobils'));
     }
 
     public function create()
@@ -65,9 +65,22 @@ class MobilController extends Controller
         ]);
         
         $mobil = Mobil::findOrFail($id);
+        $namaFile = $mobil->gambar; 
         $mobil->update(['status' => 'tidak tersedia']);
 
-dd('SUKSES - data tersimpan'); // ← tambahkan ini sementara
+if ($request->hasFile('gambar')) {
+        $file = $request->file('gambar');
+        $namaFile = time() . "_" . $file->getClientOriginalName();
+        $file->move(public_path('img'), $namaFile);
+    }
+
+    $mobil->update([
+        'nama_mobil'     => $request->nama_mobil,
+        'harga_per_hari' => $request->harga_per_hari,
+        'no_polisi'      => $request->no_polisi,
+        'status'         => $request->status,
+        'gambar'         => $namaFile,
+    ]);
 
 return redirect('/mobil')->with('success', 'Mobil berhasil disewa!');
     }

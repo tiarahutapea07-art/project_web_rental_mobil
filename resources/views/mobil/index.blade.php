@@ -283,11 +283,11 @@
         </div>
         <div class="stat-card available">
             <h6><i class="fas fa-check-circle mr-2"></i>Tersedia</h6>
-            <div class="number">{{ $mobils->count() - count($rentalAktif) }}</div>
+            <div class="number">{{ $mobils->where('status', 'tersedia')->count() }}</div>
         </div>
         <div class="stat-card unavailable">
             <h6><i class="fas fa-times-circle mr-2"></i>Disewa</h6>
-            <div class="number">{{ count($rentalAktif) }}</div>
+            <div class="number">{{ $mobils->where('status', 'tidak tersedia')->count() }}</div>
         </div>
     </div>
 
@@ -308,7 +308,7 @@
                     @endif
                     
                     @php
-                        $isDisewa = in_array($m->id, $rentalAktif);
+                        $isDisewa = $m->status === 'tidak tersedia';
                     @endphp
                     <span class="status-badge {{ $isDisewa ? 'unavailable' : 'available' }}">
                         <i class="fas {{ $isDisewa ? 'fa-ban' : 'fa-check-circle' }}"></i>

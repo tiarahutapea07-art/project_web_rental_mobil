@@ -193,7 +193,7 @@
 
                             <div class="field-group">
                                 <div class="field-label">NIK (KTP)</div>
-                                <input type="number" name="nik" class="form-control" placeholder="Masukkan 16 digit NIK" required>
+                                <input type="text" name="nik" class="form-control" placeholder="Masukkan 16 digit NIK" required>
                             </div>
 
                             <div class="field-group">

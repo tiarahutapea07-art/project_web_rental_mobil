@@ -15,7 +15,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">Form Edit Mobil</h6>
             </div>
             <div class="card-body">
-                <form action="{{ url('/mobil/' . $mobil->id) }}" method="POST">
+                <form action="{{ url('/mobil/' . $mobil->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     
@@ -56,6 +56,19 @@
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
                     </div>
+
+                    <div class="form-group mb-3">
+    <label>Gambar Mobil</label>
+    {{-- Tampilkan gambar saat ini --}}
+    @if($mobil->gambar)
+        <div class="mb-2">
+            <img src="{{ asset('img/' . $mobil->gambar) }}" 
+                 style="height:100px; object-fit:contain; border-radius:8px; background:#f3f4f6; padding:4px;">
+        </div>
+    @endif
+    <input type="file" name="gambar" class="form-control" accept="image/*">
+    <small class="text-muted">Kosongkan jika tidak ingin mengubah gambar.</small>
+</div>
 
                     <hr>
                     <button type="submit" class="btn btn-success btn-block">

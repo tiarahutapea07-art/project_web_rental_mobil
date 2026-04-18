@@ -23,11 +23,15 @@ class RentalController extends Controller
 
 public function store(Request $request)
 {
+
+    
+
+
     $request->validate([
         'mobil_id'        => 'required|exists:mobils,id',
         'nama'            => 'required|string|max:255',
-        'nik'             => 'required|numeric|digits:16',
-        'tanggal_sewa'    => 'required|date|after_or_equal:today',
+        'nik'             => 'required|string|max:20',
+        'tanggal_sewa'    => 'required|date',
         'tanggal_kembali' => 'required|date|after:tanggal_sewa',
     ]);
 
@@ -50,6 +54,8 @@ public function store(Request $request)
     $lamaSewa       = $tanggalSewa->diffInDays($tanggalKembali);
     $totalHarga     = $lamaSewa * $mobil->harga_per_hari;
 
+
+
     $rental = Rental::create([
         'mobil_id'        => $request->mobil_id,
         'customer_id'     => $customer->id_customer,
@@ -58,6 +64,8 @@ public function store(Request $request)
         'lama_sewa'       => $lamaSewa,
         'total_harga'     => $totalHarga,
         'status'          => 'aktif',
+
+        
     ]);
 
     Transaksi::create([

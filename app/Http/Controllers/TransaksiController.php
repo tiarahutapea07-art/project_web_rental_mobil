@@ -50,5 +50,6 @@ public function show($id)
     $trx = Transaksi::with('rental.customer', 'rental.mobil')->findOrFail($id);
     return view('transaksi.show', compact('trx'));
 }
+
 }
 
