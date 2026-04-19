@@ -75,3 +75,4 @@ Route::get('/generate-mobil', function () {
 
 Route::resource('transaksi', TransaksiController::class);
 Route::get('/transaksi/{id}/print', [TransaksiController::class, 'print'])->name('transaksi.print');
+Route::patch('/transaksi/{id}/lunas', [TransaksiController::class, 'tandaiLunas'])->name('transaksi.lunas');

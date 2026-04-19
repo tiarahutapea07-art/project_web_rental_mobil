@@ -11,10 +11,11 @@
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success shadow-sm">
-            {{ session('success') }}
-        </div>
-    @endif
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 
     <div class="card shadow-sm" style="border-radius: 15px; border: none;">
         <div class="card-body">
@@ -54,15 +55,27 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <div class="btn-group">
-                                    <a href="{{ route('transaksi.show', $trx->id) }}" class="btn btn-info btn-sm text-white">
-                                        <i class="fas fa-eye"></i> Detail
-                                    </a>
-                                    <button class="btn btn-secondary btn-sm">
-                                        <i class="fas fa-print"></i>
-                                    </a>
-                                </div>
-                            </td>
+    <div class="btn-group">
+        <a href="{{ route('transaksi.show', $trx->id) }}" class="btn btn-dark btn-sm">
+            <i class="fas fa-eye"></i> Detail
+        </a>
+        <button class="btn btn-secondary btn-sm" onclick="window.print()">
+            <i class="fas fa-print"></i>
+        </button>
+    </div>
+
+    @if($trx->status_bayar != 'lunas')
+    <form action="{{ route('transaksi.lunas', $trx->id) }}" method="POST" 
+          style="display:inline; margin-left:4px;"
+          onsubmit="return confirm('Tandai transaksi {{ $trx->rental->customer->nama }} sebagai lunas?')">
+        @csrf
+        @method('PATCH')
+        <button type="submit" class="btn btn-success btn-sm">
+            <i class="fas fa-check-circle"></i> Tandai Lunas
+        </button>
+    </form>
+    @endif
+</td>
                         </tr>
                         @empty
                         <tr>

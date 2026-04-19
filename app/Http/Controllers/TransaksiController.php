@@ -51,5 +51,17 @@ public function show($id)
     return view('transaksi.show', compact('trx'));
 }
 
+public function tandaiLunas($id)
+{
+    $trx = Transaksi::findOrFail($id);
+    $trx->update([
+        'status_bayar' => 'lunas',
+        'tanggal_bayar' => now(),
+    ]);
+
+    return redirect()->route('transaksi.index')
+        ->with('success', 'Transaksi berhasil ditandai lunas!');
+}
+
 }
 

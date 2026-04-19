@@ -88,8 +88,13 @@ public function index()
 public function return($id)
 {
     $rental = Rental::findOrFail($id);
+
     $rental->update(['status' => 'selesai']);
+
     $rental->mobil->update(['status' => 'tersedia']);
+    Transaksi::where('rental_id', $rental->id)
+        ->update(['status_bayar' => 'lunas']);
+
     return redirect('/rental')->with('success', 'Mobil berhasil dikembalikan.');
 }
 
