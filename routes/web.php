@@ -25,10 +25,30 @@ Route::get('/dashboard', function () {
     if(!session('login')) {
         return redirect('/login');
     }
+
     $totalMobil = Mobil::count();
     $mobilTersedia = Mobil::where('status', 'tersedia')->count();
     $mobilDisewa = Rental::where('status', 'aktif')->count();
-    return view('dashboard', compact('totalMobil', 'mobilTersedia', 'mobilDisewa'));
+
+    // Dummy grafik 12 bulan
+    $grafikSewa = [12,19,15,22,18,30,25,28,24,20,26,32];
+
+    // Dummy mobil terlaris
+    $topMobil = [
+        ['nama' => 'Avanza', 'jumlah' => 22],
+        ['nama' => 'Brio', 'jumlah' => 18],
+        ['nama' => 'Xenia', 'jumlah' => 15],
+        ['nama' => 'Innova', 'jumlah' => 12],
+        ['nama' => 'Ayla', 'jumlah' => 10],
+    ];
+
+    return view('dashboard', compact(
+        'totalMobil',
+        'mobilTersedia',
+        'mobilDisewa',
+        'grafikSewa',
+        'topMobil'
+    ));
 })->name('dashboard');
 
 // --- 2. HALAMAN STATIS TEMPLATE (PENTING) ---
