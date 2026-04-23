@@ -43,8 +43,9 @@ class CustomerController extends Controller
         return redirect('/customer')->with('success', 'Data customer berhasil diperbarui!');
     }
 
-    public function destroy($id) {
-        $customer = Customer::findOrFail($id);
+    public function destroy($id_customer) 
+    {
+        $customer = Customer::findOrFail($id_customer);
         $customer->delete();
         return redirect('/customer')->with('success', 'Data customer berhasil dihapus!');
     }

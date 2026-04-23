@@ -51,12 +51,13 @@ public function show($id)
     return view('transaksi.show', compact('trx'));
 }
 
-public function tandaiLunas($id)
+public function tandaiLunas(Request $request, $id)
 {
     $trx = Transaksi::findOrFail($id);
     $trx->update([
         'status_bayar' => 'lunas',
         'tanggal_bayar' => now(),
+        'metode_bayar'  => $request->metode_bayar, // ← tambah baris ini
     ]);
 
     return redirect()->route('transaksi.index')

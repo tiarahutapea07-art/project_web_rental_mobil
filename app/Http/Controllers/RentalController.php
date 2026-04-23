@@ -72,6 +72,7 @@ public function store(Request $request)
         'rental_id' => $rental->id,
         'jumlah_bayar' => $totalHarga,
         'status_bayar' => 'belum',
+        'metode_bayar'=> $request->metode_bayar,
     ]);
 
     $mobil->update(['status' => 'tidak tersedia']);
