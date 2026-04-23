@@ -4,13 +4,49 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MobilController;
 use App\Models\Mobil;
 use App\Models\Rental;
+use App\Models\Transaksi;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransaksiController;
+use Carbon\Carbon;
 
 // --- AUTH ROUTES ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
+
+// Helper function: Get monthly revenue for current year
+function getMonthlyRevenue() {
+    $currentYear = Carbon::now()->year;
+    
+    $monthlyData = Transaksi::selectRaw('MONTH(created_at) as month, SUM(jumlah_bayar) as total')
+        ->whereYear('created_at', $currentYear)
+        ->groupBy('month')
+        ->pluck('total', 'month')
+        ->toArray();
+
+    $revenues = [];
+    for ($month = 1; $month <= 12; $month++) {
+        $revenues[] = $monthlyData[$month] ?? 0;
+    }
+    return $revenues;
+}
+
+// Helper function: Get monthly transaction count for current year
+function getMonthlyTransactions() {
+    $currentYear = Carbon::now()->year;
+    
+    $monthlyData = Transaksi::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+        ->whereYear('created_at', $currentYear)
+        ->groupBy('month')
+        ->pluck('count', 'month')
+        ->toArray();
+
+    $transactions = [];
+    for ($month = 1; $month <= 12; $month++) {
+        $transactions[] = $monthlyData[$month] ?? 0;
+    }
+    return $transactions;
+}
 
 // --- 1. DASHBOARD ---
 Route::get('/', function () {
@@ -42,12 +78,18 @@ Route::get('/dashboard', function () {
         ['nama' => 'Ayla', 'jumlah' => 10],
     ];
 
+    // NEW: Monthly Revenue & Transactions for current year
+    $revenueData = getMonthlyRevenue();
+    $transactionData = getMonthlyTransactions();
+
     return view('dashboard', compact(
         'totalMobil',
         'mobilTersedia',
         'mobilDisewa',
         'grafikSewa',
-        'topMobil'
+        'topMobil',
+        'revenueData',
+        'transactionData'
     ));
 })->name('dashboard');
 

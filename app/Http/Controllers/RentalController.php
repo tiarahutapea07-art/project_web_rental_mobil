@@ -35,6 +35,7 @@ public function store(Request $request)
         'nik'             => 'required|string|max:20',
         'tanggal_sewa'    => 'required|date',
         'tanggal_kembali' => 'required|date|after:tanggal_sewa',
+        'metode_bayar'    => 'required|in:cash,transfer,qris',
     ]);
 
     $mobil = Mobil::findOrFail($request->mobil_id);
@@ -63,7 +64,7 @@ public function store(Request $request)
 
     $rental = Rental::create([
         'mobil_id'        => $request->mobil_id,
-        'customer_id'     => $customer->id_customer,
+        'customer_id'     => $customer->id,
         'tanggal_sewa'    => $request->tanggal_sewa,
         'tanggal_kembali' => $request->tanggal_kembali,
         'lama_sewa'       => $lamaSewa,

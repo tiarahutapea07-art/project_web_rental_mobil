@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Mobil;
+use App\Models\Transaksi;
+use App\Models\Rental;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -27,12 +31,33 @@ class AuthController extends Controller
             return redirect('/login');
         }
 
-        // DATA SEMENTARA (biar tidak error)
-        $totalMobil = 0;
-        $mobilTersedia = 0;
-        $mobilDisewa = 0;
+        $totalMobil = Mobil::count();
+        $mobilTersedia = Mobil::where('status', 'tersedia')->count();
+        $mobilDisewa = Rental::where('status', 'aktif')->count();
 
-        return view('dashboard', compact('totalMobil','mobilTersedia','mobilDisewa'));
+        // Monthly Revenue & Transactions for current year
+        $currentYear = Carbon::now()->year;
+        
+        $monthlyRevenue = Transaksi::selectRaw('MONTH(created_at) as month, SUM(jumlah_bayar) as total')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $monthlyTransactions = Transaksi::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $revenueData = [];
+        $transactionData = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $revenueData[] = $monthlyRevenue[$month] ?? 0;
+            $transactionData[] = $monthlyTransactions[$month] ?? 0;
+        }
+
+        return view('dashboard', compact('totalMobil','mobilTersedia','mobilDisewa','revenueData','transactionData'));
     }
 
     // logout
