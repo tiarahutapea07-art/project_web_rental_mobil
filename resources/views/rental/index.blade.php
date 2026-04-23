@@ -211,45 +211,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($rentals as $i => $rental)
-                    <tr>
-                        <td>{{ $i + 1 }}</td>
-                        <td class="car-name">
-                            <i class="fas fa-car mr-1" style="color:#667eea"></i>{{ $rental->mobil->nama_mobil }}
-                        </td>
-                        <td>{{ $rental->customer->nama }}</td>
-                        <td>{{ \Carbon\Carbon::parse($rental->tanggal_sewa)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($rental->tanggal_kembali)->format('d M Y') }}</td>
-                        <td>{{ $rental->lama_sewa }} hari</td>
-                        <td>Rp {{ number_format($rental->total_harga, 0, ',', '.') }}</td>
-                        <td>
-                            <span class="status-badge status-{{ $rental->status }}">
-                                {{ ucfirst($rental->status) }}
-                            </span>
-                        </td>
-                        <td>
-                            @if($rental->status == 'aktif')
-                                <form action="{{ route('rental.return', $rental->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('POST')
-                                    <button type="submit" class="btn-return"
-                                        onclick="return confirm('Apakah mobil sudah dikembalikan?');">
-                                        <i class="fas fa-undo mr-1"></i>Kembalikan
-                                    </button>
-                                </form>
-                            @else
-                                <span class="text-muted">—</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="9" class="text-center text-muted py-4">
-                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                            Belum ada data penyewaan.
-                        </td>
-                    </tr>
-                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -262,6 +223,24 @@
 <script>
     $(document).ready(function () {
         $('#rentalTable').DataTable({
+            ajax: '{{ route("rental.index") }}',
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { 
+                    data: 'nama_mobil', 
+                    name: 'nama_mobil',
+                    render: function(data, type, row) {
+                        return '<i class="fas fa-car mr-1" style="color:#667eea"></i>' + data;
+                    }
+                },
+                { data: 'customer', name: 'customer' },
+                { data: 'tanggal_sewa_formatted', name: 'tanggal_sewa', orderable: false },
+                { data: 'tanggal_kembali_formatted', name: 'tanggal_kembali', orderable: false },
+                { data: 'lama_sewa_formatted', name: 'lama_sewa', orderable: false },
+                { data: 'total_harga_formatted', name: 'total_harga', orderable: false },
+                { data: 'status_badge', name: 'status', orderable: false },
+                { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
+            ],
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ entries",
@@ -274,10 +253,7 @@
                 emptyTable: "Tidak ada data penyewaan"
             },
             pageLength: 10,
-            order: [[0, 'asc']],
-            columnDefs: [
-                { orderable: false, targets: [ 0, 3, 4, 6, 7, 8] }
-            ]
+            order: [[0, 'asc']]
         });
     });
 </script>

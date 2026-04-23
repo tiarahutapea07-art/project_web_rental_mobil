@@ -6,8 +6,10 @@ use App\Models\Rental;
 use App\Models\Mobil;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Models\Transaksi;
+use Yajra\DataTables\DataTables;
 
 class RentalController extends Controller
 {
@@ -46,7 +48,10 @@ public function store(Request $request)
         [
             'nama' => $request->nama,
             'no_telp' => $request->no_telp,
-        'alamat'  => $request->alamat,]
+            'alamat' => $request->alamat,
+            'email' => $request->nik . '@example.com', // Default email
+            'password' => Hash::make('password123'), // Default password
+        ]
     );
 
     $tanggalSewa    = Carbon::parse($request->tanggal_sewa);
@@ -82,8 +87,55 @@ public function store(Request $request)
 
 public function index()
 {
-    $rentals = Rental::with('mobil', 'customer')->get();
-    return view('rental.index', compact('rentals'));
+    if (request()->ajax()) {
+        return $this->getDataTables();
+    }
+    return view('rental.index');
+}
+
+public function getDataTables()
+{
+    $rentals = Rental::with('mobil', 'customer')->select('rentals.*');
+
+    return DataTables::of($rentals)
+        ->addIndexColumn()
+        ->addColumn('nama_mobil', function ($rental) {
+            return $rental->mobil->nama_mobil;
+        })
+        ->addColumn('customer', function ($rental) {
+            return $rental->customer->nama;
+        })
+        ->addColumn('tanggal_sewa_formatted', function ($rental) {
+            return Carbon::parse($rental->tanggal_sewa)->format('d M Y');
+        })
+        ->addColumn('tanggal_kembali_formatted', function ($rental) {
+            return Carbon::parse($rental->tanggal_kembali)->format('d M Y');
+        })
+        ->addColumn('lama_sewa_formatted', function ($rental) {
+            return $rental->lama_sewa . ' hari';
+        })
+        ->addColumn('total_harga_formatted', function ($rental) {
+            return 'Rp ' . number_format($rental->total_harga, 0, ',', '.');
+        })
+        ->addColumn('status_badge', function ($rental) {
+            return '<span class="status-badge status-' . $rental->status . '">' . ucfirst($rental->status) . '</span>';
+        })
+        ->addColumn('aksi', function ($rental) {
+            if ($rental->status == 'aktif') {
+                return '<form action="' . route('rental.return', $rental->id) . '" method="POST" style="display:inline;">
+                    ' . csrf_field() . '
+                    <input type="hidden" name="_method" value="POST">
+                    <button type="submit" class="btn-return"
+                        onclick="return confirm(\'Apakah mobil sudah dikembalikan?\');">
+                        <i class="fas fa-undo mr-1"></i>Kembalikan
+                    </button>
+                </form>';
+            } else {
+                return '<span class="text-muted">—</span>';
+            }
+        })
+        ->rawColumns(['status_badge', 'aksi'])
+        ->make(true);
 }
 
 public function return($id)

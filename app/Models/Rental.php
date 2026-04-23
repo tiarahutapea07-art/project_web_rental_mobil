@@ -23,7 +23,7 @@ class Rental extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'id_customer');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
     public function transaksi()
     {
