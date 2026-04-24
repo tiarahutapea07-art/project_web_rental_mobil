@@ -9,98 +9,56 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransaksiController;
 use Carbon\Carbon;
 
-// --- AUTH ROUTES ---
+// AUTH ROUTES
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Helper function: Get monthly revenue for current year
+// HELPER FUNCTIONS
 function getMonthlyRevenue() {
     $currentYear = Carbon::now()->year;
-    
     $monthlyData = Transaksi::selectRaw('MONTH(created_at) as month, SUM(jumlah_bayar) as total')
-        ->whereYear('created_at', $currentYear)
-        ->groupBy('month')
-        ->pluck('total', 'month')
-        ->toArray();
-
+        ->whereYear('created_at', $currentYear)->groupBy('month')->pluck('total', 'month')->toArray();
     $revenues = [];
-    for ($month = 1; $month <= 12; $month++) {
-        $revenues[] = $monthlyData[$month] ?? 0;
-    }
+    for ($month = 1; $month <= 12; $month++) { $revenues[] = $monthlyData[$month] ?? 0; }
     return $revenues;
 }
 
-// Helper function: Get monthly transaction count for current year
 function getMonthlyTransactions() {
     $currentYear = Carbon::now()->year;
-    
     $monthlyData = Transaksi::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-        ->whereYear('created_at', $currentYear)
-        ->groupBy('month')
-        ->pluck('count', 'month')
-        ->toArray();
-
+        ->whereYear('created_at', $currentYear)->groupBy('month')->pluck('count', 'month')->toArray();
     $transactions = [];
-    for ($month = 1; $month <= 12; $month++) {
-        $transactions[] = $monthlyData[$month] ?? 0;
-    }
+    for ($month = 1; $month <= 12; $month++) { $transactions[] = $monthlyData[$month] ?? 0; }
     return $transactions;
 }
 
-// --- 1. DASHBOARD ---
+// ROOT
 Route::get('/', function () {
-    if(session('login')) {
-        return redirect('/dashboard');
-    } else {
-        return redirect('/login');
-    }
+    if (!session('login')) return redirect('/login');
+    if (session('role') === 'admin') return redirect('/dashboard');
+    return redirect('/mobil');
 });
 
+// DASHBOARD — admin only
 Route::get('/dashboard', function () {
-    if(!session('login')) {
-        return redirect('/login');
-    }
-
+    if (!session('login')) return redirect('/login');
+    if (session('role') !== 'admin') return redirect('/mobil')->with('error', 'Akses ditolak!');
     $totalMobil = Mobil::count();
     $mobilTersedia = Mobil::where('status', 'tersedia')->count();
     $mobilDisewa = Rental::where('status', 'aktif')->count();
-
-    // Dummy grafik 12 bulan
     $grafikSewa = [12,19,15,22,18,30,25,28,24,20,26,32];
-
-    // Dummy mobil terlaris
     $topMobil = [
-        ['nama' => 'Avanza', 'jumlah' => 22],
-        ['nama' => 'Brio', 'jumlah' => 18],
-        ['nama' => 'Xenia', 'jumlah' => 15],
-        ['nama' => 'Innova', 'jumlah' => 12],
+        ['nama' => 'Avanza', 'jumlah' => 22], ['nama' => 'Brio', 'jumlah' => 18],
+        ['nama' => 'Xenia', 'jumlah' => 15],  ['nama' => 'Innova', 'jumlah' => 12],
         ['nama' => 'Ayla', 'jumlah' => 10],
     ];
-
-    // NEW: Monthly Revenue & Transactions for current year
     $revenueData = getMonthlyRevenue();
     $transactionData = getMonthlyTransactions();
-
-    return view('dashboard', compact(
-        'totalMobil',
-        'mobilTersedia',
-        'mobilDisewa',
-        'grafikSewa',
-        'topMobil',
-        'revenueData',
-        'transactionData'
-    ));
+    return view('dashboard', compact('totalMobil','mobilTersedia','mobilDisewa','grafikSewa','topMobil','revenueData','transactionData'));
 })->name('dashboard');
 
-// --- 2. HALAMAN STATIS TEMPLATE (PENTING) ---
-// Rute bersih untuk charts dan tables (tanpa .html)
-Route::get('/charts', function () { return view('charts'); })->name('charts');
-Route::get('/tables', [\App\Http\Controllers\UserController::class, 'index'])->name('tables');
-Route::post('/tables', [\App\Http\Controllers\UserController::class, 'store'])->name('user.store');
-Route::delete('/tables/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
-
-// --- 3. MANAJEMEN MOBIL ---
+// MOBIL — katalog semua bisa, CRUD admin only
 Route::get('/mobil', [MobilController::class, 'index'])->name('mobil.index');
 Route::get('/mobil/create', [MobilController::class, 'create'])->name('mobil.create');
 Route::post('/mobil', [MobilController::class, 'store'])->name('mobil.store');
@@ -108,33 +66,38 @@ Route::get('/mobil/{id}/edit', [MobilController::class, 'edit'])->name('mobil.ed
 Route::put('/mobil/{id}', [MobilController::class, 'update'])->name('mobil.update');
 Route::delete('/mobil/{id}', [MobilController::class, 'destroy'])->name('mobil.destroy');
 
-// --- 4. CUSTOMER ---
+// RENTAL — sewa semua bisa, list & return admin only
+Route::get('/rental/create/{mobil_id}', [\App\Http\Controllers\RentalController::class, 'create'])->name('rental.create');
+Route::post('/rental', [\App\Http\Controllers\RentalController::class, 'store'])->name('rental.store');
+Route::get('/rental', [\App\Http\Controllers\RentalController::class, 'index'])->name('rental.index');
+Route::post('/rental/{id}/return', [\App\Http\Controllers\RentalController::class, 'return'])->name('rental.return');
+
+// CUSTOMER — admin only
 Route::get('/customer', [\App\Http\Controllers\CustomerController::class, 'index'])->name('customer.index');
 Route::post('/customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customer.store');
 Route::get('/customer/{id}/edit', [\App\Http\Controllers\CustomerController::class, 'edit'])->name('customer.edit');
 Route::put('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
 Route::delete('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->name('customer.destroy');
 
-// --- 5. RENTAL ---
-Route::get('/rental', [\App\Http\Controllers\RentalController::class, 'index'])->name('rental.index');
-Route::get('/rental/create/{mobil_id}', [\App\Http\Controllers\RentalController::class, 'create'])->name('rental.create');
-Route::post('/rental', [\App\Http\Controllers\RentalController::class, 'store'])->name('rental.store');
-Route::post('/rental/{id}/return', [\App\Http\Controllers\RentalController::class, 'return'])->name('rental.return');
+// TRANSAKSI — admin only
+Route::resource('transaksi', TransaksiController::class);
+Route::get('/transaksi/{id}/print', [TransaksiController::class, 'print'])->name('transaksi.print');
+Route::patch('/transaksi/{id}/lunas', [TransaksiController::class, 'tandaiLunas'])->name('transaksi.lunas');
 
-// --- 6. GENERATOR ---
+// MANAGEMENT PENGGUNA — admin only
+Route::get('/charts', function () { return view('charts'); })->name('charts');
+Route::get('/tables', [\App\Http\Controllers\UserController::class, 'index'])->name('tables');
+Route::post('/tables', [\App\Http\Controllers\UserController::class, 'store'])->name('user.store');
+Route::delete('/tables/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
+
+// GENERATOR
 Route::get('/generate-mobil', function () {
     $daftar_gambar = ['agya', 'avanza', 'ayla', 'brio', 'fortuner', 'hr-v', 'jazz', 'pajerosport', 'yariz'];
     foreach ($daftar_gambar as $nama) {
         Mobil::updateOrCreate(['gambar' => $nama . '.png'], [
-            'nama_mobil' => strtoupper($nama),
-            'harga_per_hari' => rand(350, 750) * 1000,
-            'status' => 'tersedia',
-            'no_polisi' => 'BG ' . rand(1000, 9999) . ' OK',
+            'nama_mobil' => strtoupper($nama), 'harga_per_hari' => rand(350, 750) * 1000,
+            'status' => 'tersedia', 'no_polisi' => 'BG ' . rand(1000, 9999) . ' OK',
         ]);
     }
     return "Berhasil! Cek di /mobil";
 });
-
-Route::resource('transaksi', TransaksiController::class);
-Route::get('/transaksi/{id}/print', [TransaksiController::class, 'print'])->name('transaksi.print');
-Route::patch('/transaksi/{id}/lunas', [TransaksiController::class, 'tandaiLunas'])->name('transaksi.lunas');
