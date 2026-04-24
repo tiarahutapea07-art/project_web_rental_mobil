@@ -47,9 +47,9 @@
 
                     <div class="form-group mb-3">
                         <label>Foto Mobil</label>
-                        <input type="file" name="gambar" class="form-control @error('gambar') is-invalid @enderror" accept="image/*">
+                        <input type="file" name="foto" class="form-control @error('foto') is-invalid @enderror" accept="image/*">
                         <small class="text-muted d-block mt-1">Format: jpg, jpeg, png, gif (Max: 2MB)</small>
-                        @error('gambar')
+                        @error('foto')
                             <span class="invalid-feedback d-block">{{ $message }}</span>
                         @enderror
                     </div>

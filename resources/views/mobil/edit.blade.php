@@ -60,13 +60,13 @@
                     <div class="form-group mb-3">
     <label>Gambar Mobil</label>
     {{-- Tampilkan gambar saat ini --}}
-    @if($mobil->gambar)
+    @if($mobil->foto)
         <div class="mb-2">
-            <img src="{{ asset('img/' . $mobil->gambar) }}" 
+            <img src="{{ asset('img/' . $mobil->foto) }}" 
                  style="height:100px; object-fit:contain; border-radius:8px; background:#f3f4f6; padding:4px;">
         </div>
     @endif
-    <input type="file" name="gambar" class="form-control" accept="image/*">
+    <input type="file" name="foto" class="form-control" accept="image/*">
     <small class="text-muted">Kosongkan jika tidak ingin mengubah gambar.</small>
 </div>
 

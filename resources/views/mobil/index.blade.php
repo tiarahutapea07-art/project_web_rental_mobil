@@ -298,8 +298,8 @@
             <div class="card card-mobil shadow-sm bg-white">
                 
                 <div class="img-mobil-container position-relative">
-                    @if($m->gambar)
-                        <img src="{{ asset('img/' . $m->gambar) }}" class="img-mobil" alt="{{ $m->nama_mobil }}">
+                    @if($m->foto)
+                        <img src="{{ asset('img/' . $m->foto) }}" class="img-mobil" alt="{{ $m->nama_mobil }}">
                     @else
                         <div class="text-center text-white">
                             <i class="fas fa-car fa-4x mb-2"></i><br>

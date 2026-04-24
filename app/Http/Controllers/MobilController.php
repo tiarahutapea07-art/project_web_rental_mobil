@@ -25,13 +25,13 @@ class MobilController extends Controller
             'nama_mobil' => 'required|string|max:255',
             'harga_per_hari' => 'required|numeric|min:0',
             'no_polisi' => 'required|string|max:20',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $namaFile = null;
 
-        if ($request->hasFile('gambar')) {
-            $file = $request->file('gambar');
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
             $namaFile = time() . "_" . $file->getClientOriginalName();
             $file->move(public_path('img'), $namaFile);
         }
@@ -41,7 +41,7 @@ class MobilController extends Controller
             'harga_per_hari' => $validated['harga_per_hari'],
             'status' => 'tersedia',
             'no_polisi' => $validated['no_polisi'],
-            'gambar'  => $namaFile
+            'foto'  => $namaFile
         ]);
 
         return redirect('/mobil')->with('success', 'Mobil berhasil ditambahkan!');
@@ -65,11 +65,11 @@ class MobilController extends Controller
         ]);
         
         $mobil = Mobil::findOrFail($id);
-        $namaFile = $mobil->gambar; 
+        $namaFile = $mobil->foto; 
         $mobil->update(['status' => 'tidak tersedia']);
 
-if ($request->hasFile('gambar')) {
-        $file = $request->file('gambar');
+if ($request->hasFile('foto')) {
+        $file = $request->file('foto');
         $namaFile = time() . "_" . $file->getClientOriginalName();
         $file->move(public_path('img'), $namaFile);
     }
@@ -79,7 +79,7 @@ if ($request->hasFile('gambar')) {
         'harga_per_hari' => $request->harga_per_hari,
         'no_polisi'      => $request->no_polisi,
         'status'         => $request->status,
-        'gambar'         => $namaFile,
+        'foto'           => $namaFile,
     ]);
 
 return redirect('/mobil')->with('success', 'Mobil berhasil disewa!');

@@ -11,7 +11,7 @@ class Mobil extends Model
         'harga_per_hari',
         'status',
         'no_polisi',
-        'gambar',
+        'foto',
     ];
 
     public function rentals()
