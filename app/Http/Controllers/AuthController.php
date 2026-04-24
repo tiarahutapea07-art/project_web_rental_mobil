@@ -10,58 +10,62 @@ use Carbon\Carbon;
 
 class AuthController extends Controller
 {
-    // tampilkan halaman login
-    public function showLogin(){
+    private $users = [
+        [
+            'username' => 'kelompok6',
+            'password' => '12345',
+            'role'     => 'admin',
+            'nama'     => 'Kelompok 6',
+        ],
+        [
+            'username' => 'user1',
+            'password' => 'user123',
+            'role'     => 'user',
+            'nama'     => 'Customer 1',
+        ],
+        [
+            'username' => 'user2',
+            'password' => 'user123',
+            'role'     => 'user',
+            'nama'     => 'Customer 2',
+        ],
+    ];
+
+    public function showLogin()
+    {
+        if (session('login')) {
+            if (session('role') === 'admin') return redirect('/dashboard');
+            return redirect('/mobil');
+        }
         return view('login');
     }
 
-    // proses login
-    public function login(Request $request){
-        if($request->username == 'kelompok6' && $request->password == '12345'){
-            session(['login' => true]);
-            return redirect('/dashboard');
-        }else{
-            return back()->with('error', 'Login gagal');
+    public function login(Request $request)
+    {
+        $found = null;
+        foreach ($this->users as $user) {
+            if ($user['username'] === $request->username && $user['password'] === $request->password) {
+                $found = $user;
+                break;
+            }
         }
+
+        if ($found) {
+            session([
+                'login'    => true,
+                'role'     => $found['role'],
+                'username' => $found['username'],
+                'nama'     => $found['nama'],
+            ]);
+            if ($found['role'] === 'admin') return redirect('/dashboard');
+            return redirect('/mobil');
+        }
+
+        return back()->with('error', 'Username atau password salah!');
     }
 
-    // halaman dashboard
-    public function dashboard(){
-        if(!session('login')){
-            return redirect('/login');
-        }
-
-        $totalMobil = Mobil::count();
-        $mobilTersedia = Mobil::where('status', 'tersedia')->count();
-        $mobilDisewa = Rental::where('status', 'aktif')->count();
-
-        // Monthly Revenue & Transactions for current year
-        $currentYear = Carbon::now()->year;
-        
-        $monthlyRevenue = Transaksi::selectRaw('MONTH(created_at) as month, SUM(jumlah_bayar) as total')
-            ->whereYear('created_at', $currentYear)
-            ->groupBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
-
-        $monthlyTransactions = Transaksi::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-            ->whereYear('created_at', $currentYear)
-            ->groupBy('month')
-            ->pluck('count', 'month')
-            ->toArray();
-
-        $revenueData = [];
-        $transactionData = [];
-        for ($month = 1; $month <= 12; $month++) {
-            $revenueData[] = $monthlyRevenue[$month] ?? 0;
-            $transactionData[] = $monthlyTransactions[$month] ?? 0;
-        }
-
-        return view('dashboard', compact('totalMobil','mobilTersedia','mobilDisewa','revenueData','transactionData'));
-    }
-
-    // logout
-    public function logout(){
+    public function logout()
+    {
         session()->flush();
         return redirect('/login');
     }
