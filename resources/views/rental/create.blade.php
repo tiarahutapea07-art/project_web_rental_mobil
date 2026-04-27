@@ -221,8 +221,8 @@
                         <span class="title">Data Penyewa</span>
                     </div>
                     <div class="form-card-body">
-                        <form action="{{ route('rental.store') }}" method="POST">
-                            @csrf
+                        <form action="{{ route('rental.store') }}" method="POST" enctype="multipart/form-data">
+
                             <input type="hidden" name="mobil_id" value="{{ $mobil->id }}">
 
                             <div class="field-group">
@@ -259,30 +259,33 @@
 
                             <hr class="section-divider">
 
-                            {{-- ✅ METODE PEMBAYARAN --}}
-                            <div class="field-group">
-                                <div class="field-label">Metode Pembayaran</div>
-                                <div class="metode-group">
-                                    <div class="metode-pill">
-                                        <input type="radio" name="metode_bayar" id="m_cash" value="cash" checked>
-                                        <label for="m_cash">
-                                            <span class="pill-icon"></span> Cash
-                                        </label>
-                                    </div>
-                                    <div class="metode-pill">
-                                        <input type="radio" name="metode_bayar" id="m_transfer" value="transfer">
-                                        <label for="m_transfer">
-                                            <span class="pill-icon"></span> Transfer Bank
-                                        </label>
-                                    </div>
-                                    <div class="metode-pill">
-                                        <input type="radio" name="metode_bayar" id="m_qris" value="qris">
-                                        <label for="m_qris">
-                                            <span class="pill-icon"></span> QRIS
-                                        </label>
-                                    </div>
-                                </div>
+                           <div class="form-group mt-3">
+                            <label>Metode Pembayaran</label>
+
+                            <!-- value yang dikirim ke controller -->
+                            <input type="hidden" name="metode_bayar" id="metode_bayar" value="cash">
+
+
+                            <div style="display:flex; gap:8px;">
+                                <button type="button" class="btn btn-dark rounded-2" data-metode="cash">Cash</button>
+                                <button type="button" class="btn btn-outline-secondary rounded-2" data-metode="transfer">Transfer Bank</button>
+                                <button type="button" class="btn btn-outline-secondary rounded-2" data-metode="qris">QRIS</button>
                             </div>
+                        @csrf
+                    </div>
+
+                          
+
+                            <!-- Upload Bukti -->
+                            <div id="buktiWrapper" style="display:none; margin-top:10px;">
+                                <label>Upload Bukti Pembayaran</label>
+                                <input type="file" name="bukti_pembayaran" class="form-control">
+                            </div>
+
+                            <form action="{{ route('rental.store') }}" method="POST" enctype="multipart/form-data">
+
+
+
 
                             <hr class="section-divider">
 
@@ -359,4 +362,56 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const metodeBtns = document.querySelectorAll('button[data-metode]');
+    const bukti = document.getElementById('buktiWrapper');
+
+    metodeBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            let metode = this.getAttribute('data-metode');
+
+            if (metode === 'transfer' || metode === 'qris') {
+                bukti.style.display = 'block';
+            } else {
+                bukti.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<script>
+const metodeInput = document.getElementById('metode_bayar');
+const bukti = document.getElementById('buktiWrapper');
+
+document.querySelectorAll('[data-metode]').forEach(btn => {
+    btn.addEventListener('click', function () {
+
+        let metode = this.dataset.metode;
+
+        // simpan ke input hidden
+        metodeInput.value = metode;
+
+        // tampilkan upload jika transfer/qris
+        if (metode === 'transfer' || metode === 'qris') {
+            bukti.style.display = 'block';
+        } else {
+            bukti.style.display = 'none';
+        }
+
+        // styling aktif
+        document.querySelectorAll('[data-metode]').forEach(b => {
+            b.classList.remove('btn-dark');
+            b.classList.add('btn-outline-secondary');
+        });
+
+        this.classList.remove('btn-outline-secondary');
+        this.classList.add('btn-dark');
+    });
+});
+</script>
+
+
 @endsection

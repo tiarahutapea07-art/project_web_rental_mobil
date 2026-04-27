@@ -8,28 +8,54 @@ use App\Models\Transaksi;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransaksiController;
 use Carbon\Carbon;
+use App\Http\Controllers\AktivitasController;
+
+
 
 // AUTH ROUTES
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/aktivitas', [AktivitasController::class,'index'])->name('aktivitas.index');
+Route::get('/aktivitas/{id}',[AktivitasController::class,'show'])->name('aktivitas.show');
+Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('transaksi.store');
+Route::post('/transaksi/{id}/bayar', [TransaksiController::class, 'bayar'])->name('transaksi.bayar');
+Route::put('/transaksi/{id}/konfirmasi', [TransaksiController::class, 'konfirmasi'])->name('transaksi.konfirmasi');
+Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');
+
+
+
+
+
 
 // HELPER FUNCTIONS
 function getMonthlyRevenue() {
     $currentYear = Carbon::now()->year;
     $monthlyData = Transaksi::selectRaw('MONTH(created_at) as month, SUM(jumlah_bayar) as total')
-        ->whereYear('created_at', $currentYear)->groupBy('month')->pluck('total', 'month')->toArray();
+        ->whereYear('created_at', $currentYear)
+        ->groupBy('month')
+        ->pluck('total', 'month')
+        ->toArray();
+
     $revenues = [];
-    for ($month = 1; $month <= 12; $month++) { $revenues[] = $monthlyData[$month] ?? 0; }
+    for ($month = 1; $month <= 12; $month++) {
+        $revenues[] = $monthlyData[$month] ?? 0;
+    }
     return $revenues;
 }
 
 function getMonthlyTransactions() {
     $currentYear = Carbon::now()->year;
     $monthlyData = Transaksi::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-        ->whereYear('created_at', $currentYear)->groupBy('month')->pluck('count', 'month')->toArray();
+        ->whereYear('created_at', $currentYear)
+        ->groupBy('month')
+        ->pluck('count', 'month')
+        ->toArray();
+
     $transactions = [];
-    for ($month = 1; $month <= 12; $month++) { $transactions[] = $monthlyData[$month] ?? 0; }
+    for ($month = 1; $month <= 12; $month++) {
+        $transactions[] = $monthlyData[$month] ?? 0;
+    }
     return $transactions;
 }
 
@@ -44,21 +70,36 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     if (!session('login')) return redirect('/login');
     if (session('role') !== 'admin') return redirect('/mobil')->with('error', 'Akses ditolak!');
+
     $totalMobil = Mobil::count();
     $mobilTersedia = Mobil::where('status', 'tersedia')->count();
     $mobilDisewa = Rental::where('status', 'aktif')->count();
+
     $grafikSewa = [12,19,15,22,18,30,25,28,24,20,26,32];
+
     $topMobil = [
-        ['nama' => 'Avanza', 'jumlah' => 22], ['nama' => 'Brio', 'jumlah' => 18],
-        ['nama' => 'Xenia', 'jumlah' => 15],  ['nama' => 'Innova', 'jumlah' => 12],
+        ['nama' => 'Avanza', 'jumlah' => 22],
+        ['nama' => 'Brio', 'jumlah' => 18],
+        ['nama' => 'Xenia', 'jumlah' => 15],
+        ['nama' => 'Innova', 'jumlah' => 12],
         ['nama' => 'Ayla', 'jumlah' => 10],
     ];
+
     $revenueData = getMonthlyRevenue();
     $transactionData = getMonthlyTransactions();
-    return view('dashboard', compact('totalMobil','mobilTersedia','mobilDisewa','grafikSewa','topMobil','revenueData','transactionData'));
+
+    return view('dashboard', compact(
+        'totalMobil',
+        'mobilTersedia',
+        'mobilDisewa',
+        'grafikSewa',
+        'topMobil',
+        'revenueData',
+        'transactionData'
+    ));
 })->name('dashboard');
 
-// MOBIL — katalog semua bisa, CRUD admin only
+// MOBIL
 Route::get('/mobil', [MobilController::class, 'index'])->name('mobil.index');
 Route::get('/mobil/create', [MobilController::class, 'create'])->name('mobil.create');
 Route::post('/mobil', [MobilController::class, 'store'])->name('mobil.store');
@@ -66,26 +107,33 @@ Route::get('/mobil/{id}/edit', [MobilController::class, 'edit'])->name('mobil.ed
 Route::put('/mobil/{id}', [MobilController::class, 'update'])->name('mobil.update');
 Route::delete('/mobil/{id}', [MobilController::class, 'destroy'])->name('mobil.destroy');
 
-// RENTAL — sewa semua bisa, list & return admin only
+// RENTAL
 Route::get('/rental/create/{mobil_id}', [\App\Http\Controllers\RentalController::class, 'create'])->name('rental.create');
 Route::post('/rental', [\App\Http\Controllers\RentalController::class, 'store'])->name('rental.store');
 Route::get('/rental', [\App\Http\Controllers\RentalController::class, 'index'])->name('rental.index');
 Route::post('/rental/{id}/return', [\App\Http\Controllers\RentalController::class, 'return'])->name('rental.return');
 
-// CUSTOMER — admin only
+// CUSTOMER
 Route::get('/customer', [\App\Http\Controllers\CustomerController::class, 'index'])->name('customer.index');
 Route::post('/customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customer.store');
 Route::get('/customer/{id}/edit', [\App\Http\Controllers\CustomerController::class, 'edit'])->name('customer.edit');
 Route::put('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
 Route::delete('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->name('customer.destroy');
 
-// TRANSAKSI — admin only
+// ✅ TRANSAKSI (FIX PRINT)
 Route::resource('transaksi', TransaksiController::class);
-Route::get('/transaksi/{id}/print', [TransaksiController::class, 'print'])->name('transaksi.print');
+
+// 🔥 PRINT STRUK (INI YANG DIPAKAI)
+Route::get('/transaksi/print/{id}', [TransaksiController::class, 'print'])->name('transaksi.print');
+
+// TANDAI LUNAS
 Route::patch('/transaksi/{id}/lunas', [TransaksiController::class, 'tandaiLunas'])->name('transaksi.lunas');
 
-// MANAGEMENT PENGGUNA — admin only
-Route::get('/charts', function () { return view('charts'); })->name('charts');
+// MANAGEMENT USER
+Route::get('/charts', function () {
+    return view('charts');
+})->name('charts');
+
 Route::get('/tables', [\App\Http\Controllers\UserController::class, 'index'])->name('tables');
 Route::post('/tables', [\App\Http\Controllers\UserController::class, 'store'])->name('user.store');
 Route::delete('/tables/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
@@ -93,11 +141,18 @@ Route::delete('/tables/{id}', [\App\Http\Controllers\UserController::class, 'des
 // GENERATOR
 Route::get('/generate-mobil', function () {
     $daftar_gambar = ['agya', 'avanza', 'ayla', 'brio', 'fortuner', 'hr-v', 'jazz', 'pajerosport', 'yariz'];
+
     foreach ($daftar_gambar as $nama) {
-        Mobil::updateOrCreate(['gambar' => $nama . '.png'], [
-            'nama_mobil' => strtoupper($nama), 'harga_per_hari' => rand(350, 750) * 1000,
-            'status' => 'tersedia', 'no_polisi' => 'BG ' . rand(1000, 9999) . ' OK',
-        ]);
+        Mobil::updateOrCreate(
+            ['gambar' => $nama . '.png'],
+            [
+                'nama_mobil' => strtoupper($nama),
+                'harga_per_hari' => rand(350, 750) * 1000,
+                'status' => 'tersedia',
+                'no_polisi' => 'BG ' . rand(1000, 9999) . ' OK',
+            ]
+        );
     }
+
     return "Berhasil! Cek di /mobil";
 });

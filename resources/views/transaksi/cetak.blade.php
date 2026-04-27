@@ -16,11 +16,6 @@
             align-items: center;
         }
 
-        .logo {
-            font-weight: bold;
-            font-size: 18px;
-        }
-
         .title {
             font-size: 26px;
             font-weight: bold;
@@ -59,15 +54,6 @@
         .text-right {
             text-align: right;
         }
-
-        .no-border td {
-            border: none;
-        }
-
-        .footer {
-            margin-top: 20px;
-        }
-
     </style>
 </head>
 
@@ -90,9 +76,15 @@
         <div class="row">
             <div class="col">
                 Nota No : DCR-{{ $transaksi->id }}<br>
-                Customer : {{ $transaksi->rental->customer->nama }}<br>
+
+                Customer :
+                {{ optional($transaksi->rental->customer)->nama ?? '-' }}<br>
+
                 Tgl Order :
-                {{ date('d/m/Y', strtotime($transaksi->rental->tanggal_sewa)) }}<br>
+                {{ optional($transaksi->rental->tanggal_sewa) 
+                    ? date('d/m/Y', strtotime($transaksi->rental->tanggal_sewa)) 
+                    : '-' }}<br>
+
                 Pembayaran :
                 {{ strtoupper($transaksi->metode_bayar ?? 'CASH') }}
             </div>
@@ -113,34 +105,41 @@
                 <th class="text-right">Harga</th>
             </tr>
         </thead>
+
         <tbody>
             <tr>
                 <td>
                     Sewa Mobil<br>
-                    {{ $transaksi->rental->mobil->nama_mobil }}<br>
-                    {{ $transaksi->rental->lama_sewa }} Hari<br>
-                    {{ date('d/m/Y', strtotime($transaksi->rental->tanggal_sewa)) }}
+                    {{ optional($transaksi->rental->mobil)->nama_mobil ?? '-' }}<br>
+                    {{ optional($transaksi->rental)->lama_sewa ?? 0 }} Hari<br>
+
+                    {{ optional($transaksi->rental->tanggal_sewa)
+                        ? date('d/m/Y', strtotime($transaksi->rental->tanggal_sewa))
+                        : '-' }}
                     -
-                    {{ date('d/m/Y', strtotime($transaksi->rental->tanggal_kembali)) }}
+                    {{ optional($transaksi->rental->tanggal_kembali)
+                        ? date('d/m/Y', strtotime($transaksi->rental->tanggal_kembali))
+                        : '-' }}
                 </td>
+
                 <td class="text-right">
-                    Rp {{ number_format($transaksi->rental->total_harga, 0, ',', '.') }}
+                    Rp {{ number_format(optional($transaksi->rental)->total_harga ?? 0, 0, ',', '.') }}
                 </td>
             </tr>
         </tbody>
-    
+
         <tr>
             <td style="width:70%;">
                 <strong>Terbilang:</strong>
-                <i>{{ $terbilang }}</i>
+                <i>{{ $terbilang ?? '-' }}</i>
             </td>
+
             <td class="text-right" style="width:30%;">
                 <strong>Total IDR</strong><br>
-                Rp {{ number_format($transaksi->rental->total_harga, 0, ',', '.') }}
+                Rp {{ number_format(optional($transaksi->rental)->total_harga ?? 0, 0, ',', '.') }}
             </td>
         </tr>
     </table>
-
 
 </body>
 </html>

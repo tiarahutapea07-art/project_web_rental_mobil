@@ -2,7 +2,7 @@
 
 - [x] 1. Buat migration rename kolom `gambar` → `foto` di tabel mobils
 - [x] 2. Update Model Mobil.php ($fillable gambar → foto)
-- [x] 3. Update MobilController.php (semua referensi gambar → foto, upload naming by slug)
+- [x] 3. Update MobilController.php (semua referensi gambar → gammbar, upload naming by slug)
 - [x] 4. Update View mobil/index.blade.php (gambar → foto)
 - [x] 5. Update View mobil/create.blade.php (gambar → foto)
 - [x] 6. Update View mobil/edit.blade.php (gambar → foto)

@@ -107,34 +107,27 @@
     vertical-align: middle;
     color: #1A2E4A;
 }
-.trx-table td:last-child { border-right: none; }
-.trx-table tbody tr:last-child td { border-bottom: none; }
-.trx-table tbody tr:hover { background: rgba(26,46,74,.025); }
-/* Badge */
+/* STATUS */
+.status-bar {
+    margin: 10px 24px;
+    padding: 12px 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+}
 .badge-lunas {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 11px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    background: rgba(34,197,94,.12);
+    background: rgba(34,197,94,.15);
     color: #16a34a;
+    padding: 4px 12px;
+    border-radius: 20px;
 }
 .badge-belum {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 11px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    background: rgba(239,68,68,.12);
+    background: rgba(239,68,68,.15);
     color: #dc2626;
+    padding: 4px 12px;
+    border-radius: 20px;
 }
-.badge-lunas i, .badge-belum i { font-size: 7px; }
-
 /* Aksi buttons */
 .btn-detail {
     display: inline-flex;
@@ -288,51 +281,79 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($transaksis as $trx)
-                    <tr>
-                        <td class="text-center" style="color:#6B7A99;font-size:13px;">{{ $loop->iteration }}</td>
-                        <td><strong>{{ $trx->rental->customer->nama }}</strong></td>
-                        <td>{{ $trx->rental->mobil->nama_mobil }}</td>
-                        <td style="font-weight:700;">Rp {{ number_format($trx->rental->total_harga, 0, ',', '.') }}</td>
-                        <td style="color:#22C55E;font-weight:600;">Rp {{ number_format($trx->jumlah_bayar, 0, ',', '.') }}</td>
-                        <td class="text-center">
-                            @if($trx->status_bayar == 'lunas')
-                                <span class="badge-lunas"><i class="fas fa-circle"></i> Lunas</span>
-                            @else
-                                <span class="badge-belum"><i class="fas fa-circle"></i> Belum Lunas</span>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            <div class="aksi-group">
-                                <a href="{{ route('transaksi.show', $trx->id) }}" class="btn-detail">
-                                    <i class="fas fa-eye"></i> Detail
-                                </a>
-                                <button class="btn-print" onclick="window.print()" title="Print">
-                                    <i class="fas fa-print"></i>
-                                </button>
-                                @if($trx->status_bayar != 'lunas')
-                                <form action="{{ route('transaksi.lunas', $trx->id) }}" method="POST" style="display:inline;">
-    @csrf
-    @method('PATCH')
-    <button type="submit" class="btn-lunas">
-        <i class="fas fa-circle-check"></i> Tandai Lunas
-    </button>
-</form>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <i class="fas fa-folder-open"></i>
-                                Belum ada data transaksi.
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
+    @forelse($transaksis as $trx)
+    <tr>
+        <td class="text-center" style="color:#6B7A99;font-size:13px;">
+            {{ $loop->iteration }}
+        </td>
+
+        <td>
+            <strong>{{ $trx->rental->customer->nama }}</strong>
+        </td>
+
+        <td>
+            {{ $trx->rental->mobil->nama_mobil }}
+        </td>
+
+        <td style="font-weight:700;">
+            Rp {{ number_format($trx->rental->total_harga, 0, ',', '.') }}
+        </td>
+
+        <td style="color:#22C55E;font-weight:600;">
+            Rp {{ number_format($trx->jumlah_bayar, 0, ',', '.') }}
+        </td>
+
+        {{-- ✅ STATUS (SUDAH DIPERBAIKI) --}}
+        <td class="text-center">
+            @if($trx->status == 'lunas')
+                <span class="badge-lunas">Lunas</span>
+            @else
+                <span class="badge-belum">Belum Lunas</span>
+            @endif
+
+
+        </td>
+
+        {{-- ✅ AKSI --}}
+        <td class="text-center">
+            <div class="aksi-group">
+
+                {{-- Detail --}}
+                <a href="{{ route('transaksi.show', $trx->id) }}" class="btn-detail">
+                    <i class="fas fa-eye"></i> Detail
+                </a>
+
+                {{-- Print --}}
+                <a href="{{ route('transaksi.print', $trx->id) }}" target="_blank" class="btn-print" title="Print">
+                    <i class="fas fa-print"></i>
+                </a>
+
+                {{-- Tombol Lunas hanya muncul kalau belum lunas --}}
+                @if($trx->status != 'lunas')
+                <form action="{{ route('transaksi.lunas', $trx->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn-lunas">
+                        <i class="fas fa-circle-check"></i> Tandai Lunas
+                    </button>
+                </form>
+                @endif
+
+            </div>
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="7">
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                Belum ada data transaksi.
+            </div>
+        </td>
+    </tr>
+    @endforelse
+</tbody>
+
             </table>
         </div>
     </div>

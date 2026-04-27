@@ -6,23 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
+    if (Schema::hasColumn('mobils', 'gambar')) {
         Schema::table('mobils', function (Blueprint $table) {
             $table->renameColumn('gambar', 'foto');
         });
     }
+    }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+
+    public function down()
     {
+    if (Schema::hasColumn('mobils', 'foto')) {
         Schema::table('mobils', function (Blueprint $table) {
             $table->renameColumn('foto', 'gambar');
         });
     }
+    }
+
 };

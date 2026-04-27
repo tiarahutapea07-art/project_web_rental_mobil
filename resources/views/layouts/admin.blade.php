@@ -46,6 +46,23 @@
         }
         .role-badge.admin { background: #1A2744; color: #F59E0B; }
         .role-badge.user  { background: #F59E0B; color: #fff; }
+
+        .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 225px; /* sesuaikan dengan sidebar kamu */
+        overflow-y: auto;
+        z-index: 1000;
+        }
+
+        #content-wrapper {
+            margin-left: 225px; /* HARUS sama dengan width sidebar */
+        }
+
+
+
     </style>
 </head>
 
@@ -134,6 +151,13 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('aktivitas.index') }}">
+                <i class="fas fa-history"></i>
+                <span>Aktivitas</span>
+            </a>
+        </li>
+
         @endif
 
         <hr class="sidebar-divider d-none d-md-block">
@@ -150,10 +174,6 @@
 
             <!-- ====== TOPBAR ====== -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                    <i class="fa fa-bars"></i>
-                </button>
 
                 <!-- Search -->
                 <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
@@ -287,6 +307,5 @@
 <script src="{{ asset('sbadmin2/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 <script src="{{ asset('sbadmin2/js/sb-admin-2.min.js') }}"></script>
 @stack('scripts')
-
 </body>
 </html>

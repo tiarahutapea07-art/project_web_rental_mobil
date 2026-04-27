@@ -5,64 +5,164 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use App\Models\Rental;
+use Carbon\Carbon;
 
 class TransaksiController extends Controller
 {
     public function index()
     {
-        $transaksis = Transaksi::with('rental.customer', 'rental.mobil')->get();
+        $transaksis = Transaksi::with('rental.customer', 'rental.mobil')
+            ->latest()
+            ->get();
+
         return view('transaksi.index', compact('transaksis'));
     }
 
     public function create()
-{
-    $rentals = Rental::with('customer', 'mobil')->get();
-    return view('transaksi.create', compact('rentals'));
-}
-
-public function store(Request $request)
-{
-    $rental = Rental::findOrFail($request->rental_id);
-
-    $status = $request->jumlah_bayar >= $rental->total_harga ? 'lunas' : 'belum';
-
-    Transaksi::create([
-        'rental_id' => $request->rental_id,
-        'tanggal_bayar' => now(),
-        'jumlah_bayar' => $request->jumlah_bayar,
-        'metode_bayar' => $request->metode_bayar,
-        'status_bayar' => $status,
-    ]);
-
-    // update status rental kalau lunas
-    if ($status == 'lunas') {
-        $rental->update(['status' => 'selesai']);
-        // Kembalikan mobil ke status tersedia
-        $rental->mobil->update(['status' => 'tersedia']);
+    {
+        $rentals = Rental::with('mobil', 'customer')->get();
+        return view('transaksi.create', compact('rentals'));
     }
 
-    return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan');
-}
+    public function store(Request $request)
+    {
+        $request->validate([
+            'rental_id' => 'required',
+            'tanggal_sewa' => 'required|date',
+            'tanggal_kembali' => 'required|date|after:tanggal_sewa',
+            'metode_bayar' => 'required|in:cash,transfer,qris',
+        ]);
 
+        $rental = Rental::with('mobil')->findOrFail($request->rental_id);
 
-public function show($id)
+        $lama = Carbon::parse($request->tanggal_sewa)
+            ->diffInDays(Carbon::parse($request->tanggal_kembali));
+
+        $harga = $rental->mobil->harga_per_hari;
+        $total = $lama * $harga;
+
+        Transaksi::create([
+            'rental_id' => $request->rental_id,
+            'tanggal_sewa' => $request->tanggal_sewa,
+            'tanggal_kembali' => $request->tanggal_kembali,
+            'total_harga' => $total,
+            'jumlah_bayar' => $request->jumlah_bayar ?? 0,
+            'metode_bayar' => $request->metode_bayar,
+            'status_pembayaran' => 'Belum Lunas',
+            'status_transaksi' => 'pending',
+            'tanggal_bayar' => now()
+        ]);
+
+        return redirect()->route('aktivitas.index')
+            ->with('success', 'Transaksi berhasil dibuat!');
+    }
+
+    public function show($id)
+    {
+        $transaksi = Transaksi::with('rental.customer', 'rental.mobil')
+            ->findOrFail($id);
+
+        return view('transaksi.show', compact('transaksi'));
+    }
+
+    // 🔥 BAGIAN PALING PENTING
+    public function bayar(Request $request, $id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+
+        $request->validate([
+            'metode_bayar' => 'required|in:cash,transfer,qris',
+        ]);
+
+        $data = [
+            'metode_bayar' => $request->metode_bayar,
+        ];
+
+        // jika transfer / QRIS
+        if (in_array($request->metode_bayar, ['transfer', 'qris'])) {
+
+            $request->validate([
+                'bukti_pembayaran' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            ]);
+
+            if ($request->hasFile('bukti_pembayaran')) {
+
+                $file = $request->file('bukti_pembayaran');
+                $namaFile = time() . '_' . $file->getClientOriginalName();
+
+                $file->move(public_path('bukti'), $namaFile);
+
+                $data['bukti_pembayaran'] = $namaFile;
+                $data['status_pembayaran'] = 'Menunggu Konfirmasi';
+            }
+
+        } else {
+            // cash
+            $data['status_pembayaran'] = 'Lunas';
+        }
+
+        $transaksi->update($data);
+
+        return back()->with('success', 'Pembayaran berhasil');
+    }
+
+    public function konfirmasi($id)
+    {
+        $transaksi = Transaksi::findOrFail($id);
+
+        $transaksi->update([
+            'status_pembayaran' => 'Lunas',
+            'tanggal_bayar' => now()
+        ]);
+
+        return back()->with('success', 'Pembayaran dikonfirmasi');
+    }
+
+   
+public function tandaiLunas($id)
 {
-    $trx = Transaksi::with('rental.customer', 'rental.mobil')->findOrFail($id);
-    return view('transaksi.show', compact('trx'));
+    $transaksi = Transaksi::findOrFail($id);
+
+    $transaksi->status = 'lunas';
+    $transaksi->save();
+
+    return redirect()->back()->with('success', 'Transaksi berhasil dilunasi!');
 }
 
-public function tandaiLunas(Request $request, $id)
+
+
+   public function print($id)
 {
-    $trx = Transaksi::findOrFail($id);
-    $trx->update([
-        'status_bayar' => 'lunas',
-        'tanggal_bayar' => now(),
-        'metode_bayar'  => $request->metode_bayar, // ← tambah baris ini
-    ]);
+    $transaksi = Transaksi::with('rental.mobil', 'rental.customer')
+        ->findOrFail($id);
 
-    return redirect()->route('transaksi.index')
-        ->with('success', 'Transaksi berhasil ditandai lunas!');
+    $terbilang = $this->terbilang($transaksi->rental->total_harga);
+
+    return view('transaksi.print', compact('transaksi', 'terbilang'));
+}
+
+function terbilang($angka)
+{
+    $angka = abs($angka);
+    $baca = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+
+    if ($angka < 12) {
+        return " " . $baca[$angka];
+    } elseif ($angka < 20) {
+        return $this->terbilang($angka - 10) . " Belas";
+    } elseif ($angka < 100) {
+        return $this->terbilang($angka / 10) . " Puluh" . $this->terbilang($angka % 10);
+    } elseif ($angka < 200) {
+        return " Seratus" . $this->terbilang($angka - 100);
+    } elseif ($angka < 1000) {
+        return $this->terbilang($angka / 100) . " Ratus" . $this->terbilang($angka % 100);
+    } elseif ($angka < 2000) {
+        return " Seribu" . $this->terbilang($angka - 1000);
+    } elseif ($angka < 1000000) {
+        return $this->terbilang($angka / 1000) . " Ribu" . $this->terbilang($angka % 1000);
+    } else {
+        return "Jumlah terlalu besar";
+    }
 }
 
 }
-
