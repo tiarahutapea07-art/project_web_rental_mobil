@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <style>
     .mobil-card {
         background: linear-gradient(135deg, #1A2E4A 0%, #243d63 100%);
@@ -320,12 +321,12 @@
 
                             <div class="field-group">
                                 <div class="field-label">Tanggal Sewa</div>
-                                <input type="date" name="tanggal_sewa" id="tanggal_sewa" class="form-control" required>
+                                <input type="text" name="tanggal_sewa" id="tanggal_sewa" class="form-control" placeholder="YYYY-MM-DD" required autocomplete="off">
                             </div>
 
                             <div class="field-group">
                                 <div class="field-label">Tanggal Kembali</div>
-                                <input type="date" name="tanggal_kembali" id="tanggal_kembali" class="form-control" required>
+                                <input type="text" name="tanggal_kembali" id="tanggal_kembali" class="form-control" placeholder="YYYY-MM-DD" required autocomplete="off">
                             </div>
 
                             <hr class="section-divider">
@@ -397,41 +398,6 @@
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const tanggalSewa    = document.getElementById('tanggal_sewa');
-    const tanggalKembali = document.getElementById('tanggal_kembali');
-    const priceSummary   = document.getElementById('priceSummary');
-    const lamaSewa       = document.getElementById('lamaSewa');
-    const totalHarga     = document.getElementById('totalHarga');
-    const hargaPerHari   = parseFloat("{{ $mobil->harga_per_hari }}");
-
-    const today = new Date().toISOString().split('T')[0];
-    tanggalSewa.min = today;
-
-    tanggalSewa.addEventListener('change', function () {
-        tanggalKembali.min = this.value;
-        calculatePrice();
-    });
-    tanggalKembali.addEventListener('change', calculatePrice);
-
-    function calculatePrice() {
-        if (tanggalSewa.value && tanggalKembali.value) {
-            const start = new Date(tanggalSewa.value);
-            const end   = new Date(tanggalKembali.value);
-            if (end > start) {
-                const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                lamaSewa.textContent   = diffDays + ' hari';
-                totalHarga.textContent = 'Rp ' + (diffDays * hargaPerHari).toLocaleString('id-ID');
-                priceSummary.style.display = 'block';
-            } else {
-                priceSummary.style.display = 'none';
-            }
-        }
-    }
-});
-</script>
 
 <script>
 const metodeInput = document.getElementById('metode_bayar');
@@ -519,5 +485,59 @@ function isiDataCustomer(select) {
     }
 }
 </script>
+
+@push('scripts')
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script>
+$(function() {
+    if (!($.ui && $.ui.datepicker)) {
+        return;
+    }
+
+    const hargaPerHari = parseFloat("{{ $mobil->harga_per_hari }}");
+    const priceSummary = document.getElementById('priceSummary');
+    const lamaSewa = document.getElementById('lamaSewa');
+    const totalHarga = document.getElementById('totalHarga');
+
+    $('#tanggal_sewa').datepicker({
+        dateFormat: 'yy-mm-dd',
+        minDate: 0,
+        onSelect: function() {
+            const selectedDate = $(this).datepicker('getDate');
+            $('#tanggal_kembali').datepicker('option', 'minDate', selectedDate);
+            calculatePrice();
+        }
+    });
+
+    $('#tanggal_kembali').datepicker({
+        dateFormat: 'yy-mm-dd',
+        minDate: 0,
+        onSelect: calculatePrice
+    });
+
+    function calculatePrice() {
+        const startVal = $('#tanggal_sewa').val();
+        const endVal = $('#tanggal_kembali').val();
+
+        if (!startVal || !endVal) {
+            priceSummary.style.display = 'none';
+            return;
+        }
+
+        const start = new Date(startVal);
+        const end = new Date(endVal);
+
+        if (end > start) {
+            const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            lamaSewa.textContent = diffDays + ' hari';
+            totalHarga.textContent = 'Rp ' + (diffDays * hargaPerHari).toLocaleString('id-ID');
+            priceSummary.style.display = 'block';
+        } else {
+            priceSummary.style.display = 'none';
+        }
+    }
+});
+</script>
+@endpush
 
 @endsection
