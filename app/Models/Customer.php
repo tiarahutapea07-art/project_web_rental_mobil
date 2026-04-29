@@ -21,24 +21,7 @@ class Customer extends Model
     }
 
     // Enkripsi nomor telepon menggunakan sistem berlapis (Crypt untuk data sensitif)
-    public function setNoTelpAttribute($value)
-    {
-        $this->attributes['no_telp'] = Crypt::encryptString($value);
-    }
 
-    public function getNoTelpAttribute($value)
-    {
-        return Crypt::decryptString($value);
-    }
 
-    // Enkripsi alamat menggunakan sistem berlapis (Crypt untuk data sensitif)
-    public function setAlamatAttribute($value)
-    {
-        $this->attributes['alamat'] = Crypt::encryptString($value);
-    }
 
-    public function getAlamatAttribute($value)
-    {
-        return Crypt::decryptString($value);
-    }
 }

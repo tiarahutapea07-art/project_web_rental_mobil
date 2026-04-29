@@ -18,7 +18,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/aktivitas', [AktivitasController::class,'index'])->name('aktivitas.index');
 Route::get('/aktivitas/{id}',[AktivitasController::class,'show'])->name('aktivitas.show');
-Route::post('/transaksi/store', [TransaksiController::class, 'store'])->name('transaksi.store');
+
 Route::post('/transaksi/{id}/bayar', [TransaksiController::class, 'bayar'])->name('transaksi.bayar');
 Route::put('/transaksi/{id}/konfirmasi', [TransaksiController::class, 'konfirmasi'])->name('transaksi.konfirmasi');
 Route::get('/transaksi/{id}/cetak', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');
@@ -60,11 +60,7 @@ function getMonthlyTransactions() {
 }
 
 // ROOT
-Route::get('/', function () {
-    if (!session('login')) return redirect('/login');
-    if (session('role') === 'admin') return redirect('/dashboard');
-    return redirect('/mobil');
-});
+Route::get('/', [AuthController::class, 'showLogin'])->name('home');
 
 // DASHBOARD — admin only
 Route::get('/dashboard', function () {
@@ -72,8 +68,12 @@ Route::get('/dashboard', function () {
     if (session('role') !== 'admin') return redirect('/mobil')->with('error', 'Akses ditolak!');
 
     $totalMobil = Mobil::count();
-    $mobilTersedia = Mobil::where('status', 'tersedia')->count();
-    $mobilDisewa = Rental::where('status', 'aktif')->count();
+    $mobilDisewa = Rental::where('status', 'aktif')->distinct('mobil_id')->count('mobil_id');
+    $mobilTersedia = $totalMobil - $mobilDisewa;
+
+    $pembayaranLunas = Transaksi::where('status_pembayaran', 'Lunas')->count();
+    $pembayaranMenunggu = Transaksi::where('status_pembayaran', 'Menunggu Konfirmasi')->count();
+    $pembayaranBelum = Transaksi::where('status_pembayaran', 'Belum Lunas')->count();
 
     $grafikSewa = [12,19,15,22,18,30,25,28,24,20,26,32];
 
@@ -92,6 +92,9 @@ Route::get('/dashboard', function () {
         'totalMobil',
         'mobilTersedia',
         'mobilDisewa',
+        'pembayaranLunas',
+        'pembayaranMenunggu',
+        'pembayaranBelum',
         'grafikSewa',
         'topMobil',
         'revenueData',
@@ -108,13 +111,13 @@ Route::put('/mobil/{id}', [MobilController::class, 'update'])->name('mobil.updat
 Route::delete('/mobil/{id}', [MobilController::class, 'destroy'])->name('mobil.destroy');
 
 // RENTAL
-Route::get('/rental/create/{mobil_id}', [\App\Http\Controllers\RentalController::class, 'create'])->name('rental.create');
-Route::post('/rental', [\App\Http\Controllers\RentalController::class, 'store'])->name('rental.store');
-Route::get('/rental', [\App\Http\Controllers\RentalController::class, 'index'])->name('rental.index');
-Route::post('/rental/{id}/return', [\App\Http\Controllers\RentalController::class, 'return'])->name('rental.return');
+Route::get('/rental/create/{mobil_id}', [RentalController::class, 'create'])->name('rental.create');
+Route::post('/rental/store', [RentalController::class, 'store'])->name('rental.store');
+Route::match(['get', 'post'], '/rental', [RentalController::class, 'index'])->name('rental.index');
+Route::post('/rental/{id}/return', [RentalController::class, 'return'])->name('rental.return');
 
 // CUSTOMER
-Route::get('/customer', [\App\Http\Controllers\CustomerController::class, 'index'])->name('customer.index');
+Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
 Route::post('/customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customer.store');
 Route::get('/customer/{id}/edit', [\App\Http\Controllers\CustomerController::class, 'edit'])->name('customer.edit');
 Route::put('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
