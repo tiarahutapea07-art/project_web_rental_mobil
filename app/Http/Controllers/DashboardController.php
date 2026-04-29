@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mobil;
+use App\Models\Rental;
 use App\Models\Transaksi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -11,10 +12,12 @@ class DashboardController extends Controller
 {
     public function index() 
     {
-        // Existing dashboard statistics
+        // Reconcile mobil status against active rentals to fix old/broken data.
+        $this->reconcileMobilStatuses();
+
         $totalMobil = Mobil::count();
-        $mobilTersedia = Mobil::where('status', 'tersedia')->count();
-        $mobilDisewa = Mobil::where('status', 'tidak tersedia')->count();
+        $mobilDisewa = Rental::where('status', 'aktif')->distinct('mobil_id')->count('mobil_id');
+        $mobilTersedia = $totalMobil - $mobilDisewa;
 
         $pembayaranLunas = Transaksi::where('status_pembayaran', 'Lunas')->count();
         $pembayaranMenunggu = Transaksi::where('status_pembayaran', 'Menunggu Konfirmasi')->count();
@@ -80,5 +83,24 @@ class DashboardController extends Controller
         }
 
         return $transactions;
+    }
+
+    /**
+     * Reconcile mobil status with active rentals.
+     * This fixes stale or broken mobil data by marking currently rented cars as unavailable
+     * and making cars without an active rental available again.
+     */
+    private function reconcileMobilStatuses()
+    {
+        $activeMobilIds = Rental::where('status', 'aktif')
+            ->distinct('mobil_id')
+            ->pluck('mobil_id')
+            ->toArray();
+
+        Mobil::whereIn('id', $activeMobilIds)
+            ->update(['status' => 'tidak tersedia']);
+
+        Mobil::whereNotIn('id', $activeMobilIds)
+            ->update(['status' => 'tersedia']);
     }
 }

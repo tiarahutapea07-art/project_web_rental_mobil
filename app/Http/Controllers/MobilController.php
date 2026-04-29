@@ -65,22 +65,21 @@ class MobilController extends Controller
         ]);
         
         $mobil = Mobil::findOrFail($id);
-        $namaFile = $mobil->foto; 
-        $mobil->update(['status' => 'tidak tersedia']);
+        $namaFile = $mobil->foto;
 
-if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $namaFile = time() . "_" . $file->getClientOriginalName();
-        $file->move(public_path('img'), $namaFile);
-    }
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $namaFile = time() . "_" . $file->getClientOriginalName();
+            $file->move(public_path('img'), $namaFile);
+        }
 
-    $mobil->update([
-        'nama_mobil'     => $request->nama_mobil,
-        'harga_per_hari' => $request->harga_per_hari,
-        'no_polisi'      => $request->no_polisi,
-        'status'         => $request->status,
-        'foto'           => $namaFile,
-    ]);
+        $mobil->update([
+            'nama_mobil'     => $request->nama_mobil,
+            'harga_per_hari' => $request->harga_per_hari,
+            'no_polisi'      => $request->no_polisi,
+            'status'         => $request->status,
+            'foto'           => $namaFile,
+        ]);
 
 return redirect('/mobil')->with('success', 'Mobil berhasil disewa!');
     }
