@@ -266,7 +266,7 @@
                 data-nik="{{ $c->nik }}"
                 data-telp="{{ $c->no_telp }}"
                 data-alamat="{{ $c->alamat }}"
-                {{ old('customer_id') == $c->id ? 'selected' : '' }}>
+                {{ old('customer_id') == $c->id || (!old('customer_id') && isset($currentCustomer) && $currentCustomer->id == $c->id) ? 'selected' : '' }}>
                 {{ $c->nama }} — {{ $c->nik }}
             </option>
         @endforeach
@@ -288,22 +288,31 @@
     <div class="field-group">
         <div class="field-label">Nama Penyewa</div>
         <input type="text" name="nama" id="nama" class="form-control"
-               placeholder="Masukkan nama lengkap penyewa" required>
+               placeholder="Masukkan nama lengkap penyewa"
+               value="{{ old('nama', optional($currentCustomer)->nama) }}"
+               required
+               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
     </div>
     <div class="field-group">
         <div class="field-label">NIK (KTP)</div>
         <input type="text" name="nik" id="nik" class="form-control"
-               placeholder="Masukkan 16 digit NIK" maxlength="16" required>
+               placeholder="Masukkan 16 digit NIK" maxlength="16"
+               value="{{ old('nik', optional($currentCustomer)->nik) }}"
+               required
+               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
     </div>
     <div class="field-group">
         <div class="field-label">No. Telepon</div>
         <input type="text" name="no_telp" id="no_telp" class="form-control"
-               placeholder="Contoh: 081234567890">
+               placeholder="Contoh: 081234567890"
+               value="{{ old('no_telp', optional($currentCustomer)->no_telp) }}"
+               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
     </div>
     <div class="field-group top">
         <div class="field-label">Alamat</div>
         <textarea name="alamat" id="alamat" class="form-control" rows="2"
-                  placeholder="Masukkan alamat lengkap"></textarea>
+                  placeholder="Masukkan alamat lengkap"
+                  {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>{{ old('alamat', optional($currentCustomer)->alamat) }}</textarea>
     </div>
 </div>
 

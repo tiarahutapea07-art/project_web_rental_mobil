@@ -20,9 +20,15 @@ class RentalController extends Controller
         if ($mobil->status !== 'tersedia') {
             return redirect('/mobil')->with('error', 'Mobil tidak tersedia untuk disewa.');
         }
-         $customers = Customer::orderBy('nama')->get();
 
-        return view('rental.create', compact('mobil', 'customers'));
+        $customers = Customer::orderBy('nama')->get();
+        $currentCustomer = null;
+
+        if (session('customer_id')) {
+            $currentCustomer = Customer::find(session('customer_id'));
+        }
+
+        return view('rental.create', compact('mobil', 'customers', 'currentCustomer'));
     }
 
     public function store(Request $request)

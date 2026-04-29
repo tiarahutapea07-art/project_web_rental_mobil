@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Customer;
 use App\Models\Mobil;
 use App\Models\Transaksi;
 use App\Models\Rental;
@@ -51,12 +52,22 @@ class AuthController extends Controller
         }
 
         if ($found) {
-            session([
+            $sessionData = [
                 'login'    => true,
                 'role'     => $found['role'],
                 'username' => $found['username'],
                 'nama'     => $found['nama'],
-            ]);
+            ];
+
+            if ($found['role'] === 'user') {
+                $customer = Customer::where('nama', $found['nama'])->first();
+                if ($customer) {
+                    $sessionData['customer_id'] = $customer->id;
+                }
+            }
+
+            session($sessionData);
+
             if ($found['role'] === 'admin') return redirect('/dashboard');
             return redirect('/mobil');
         }
