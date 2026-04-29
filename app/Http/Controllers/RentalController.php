@@ -20,8 +20,9 @@ class RentalController extends Controller
         if ($mobil->status !== 'tersedia') {
             return redirect('/mobil')->with('error', 'Mobil tidak tersedia untuk disewa.');
         }
+         $customers = Customer::orderBy('nama')->get();
 
-        return view('rental.create', compact('mobil'));
+        return view('rental.create', compact('mobil', 'customers'));
     }
 
     public function store(Request $request)
@@ -39,16 +40,22 @@ class RentalController extends Controller
         $mobil = Mobil::findOrFail($request->mobil_id);
 
         // ================= CUSTOMER =================
-        $customer = Customer::firstOrCreate(
-            ['nik' => $request->nik],
-            [
-                'nama'     => $request->nama,
-                'no_telp'  => $request->no_telp,
-                'alamat'   => $request->alamat,
-                'email'    => $request->nik . '@example.com',
-                'password' => Hash::make('password123'),
-            ]
-        );
+        if ($request->customer_id) {
+            // Pilih customer yang sudah ada
+            $customer = Customer::findOrFail($request->customer_id);
+            } else {
+                // Buat customer baru
+                $customer = Customer::firstOrCreate(
+                    ['nik' => $request->nik],
+                    [
+                        'nama'     => $request->nama,
+                        'no_telp'  => $request->no_telp,
+                        'alamat'   => $request->alamat,
+                        'email'    => $request->nik . '@example.com',
+                        'password' => Hash::make('password123'),
+                        ]
+                        );
+                        }
 
         // ================= HITUNG SEWA =================
         $tanggalSewa    = Carbon::parse($request->tanggal_sewa);

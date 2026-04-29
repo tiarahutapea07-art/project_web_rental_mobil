@@ -77,6 +77,23 @@
         transition: border-color 0.2s;
         font-family: inherit;
     }
+/* Fix select dropdown */
+#customer_id {
+    appearance: auto;
+    -webkit-appearance: auto;
+    cursor: pointer;
+    padding-right: 30px;
+    width: 100%;
+    display: block;
+    height: auto;
+    min-height: 42px;
+}
+#customer_id option {
+    padding: 8px;
+    font-size: 13px;
+    color: #1A2E4A;
+    background: #fff;
+}
     .form-card-body .form-control:focus,
     .form-card-body .form-select:focus {
         border-color: #1A2E4A;
@@ -147,28 +164,34 @@
 
     .btn-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .btn-confirm {
-        display: inline-flex; align-items: center; gap: 8px;
-        background: #1A2E4A; color: #f7f4f4;
-        border: none; border-radius: 10px;
-        padding: 11px 24px; font-size: 14px; font-weight: 700;
-        cursor: pointer; text-decoration: none;
-        transition: all .18s; font-family: inherit;
-    }
-    .btn-confirm:hover { background: #c9cbcf; color: #161414; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(7, 21, 41, 0.2); }
-    .btn-cancel {
     display: inline-flex; align-items: center; gap: 8px;
-    background: #1A2E4A; color: #fbf9f9;
+    background: #F59E0B; color: #1A2E4A;
     border: none; border-radius: 10px;
     padding: 11px 24px; font-size: 14px; font-weight: 700;
     cursor: pointer; text-decoration: none;
     transition: all .18s; font-family: inherit;
 }
+.btn-confirm:hover { 
+    background: #d97706; 
+    color: #1A2E4A;
+    transform: translateY(-1px); 
+    box-shadow: 0 4px 14px rgba(245,158,11,0.4); 
+}
 
+.btn-cancel {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #e73333; color: #fff;
+    border: none; border-radius: 10px;
+    padding: 11px 24px; font-size: 14px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: all .18s; font-family: inherit;
+}
 .btn-cancel:hover { 
-    background: #c9cbcf;  /* ← tambahkan ini */
-    color: #161414; 
-    border-color: #e3d8d8;
-    text-decoration: none; /* ← tambahkan ini */
+    background: #ce1d1d;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(239,68,68,0.4);
+    text-decoration: none;
 }
     .btn-back-top {
         display: inline-flex; align-items: center; gap: 6px;
@@ -222,28 +245,65 @@
                     </div>
                     <div class="form-card-body">
                         <form action="{{ route('rental.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
 
                             <input type="hidden" name="mobil_id" value="{{ $mobil->id }}">
 
-                            <div class="field-group">
-                                <div class="field-label">Nama Penyewa</div>
-                                <input type="text" name="nama" class="form-control" placeholder="Masukkan nama lengkap penyewa" required>
-                            </div>
+                            
+{{-- PILIH CUSTOMER --}}
+<div class="field-group">
+    <div class="field-label">Customer</div>
+    <select name="customer_id" id="customer_id" class="form-control" onchange="isiDataCustomer(this)">
+        <option value="">-- Pilih Customer --</option>
+        <option value="baru" style="color:#059669; font-weight:700;">
+             Tambah Customer Baru
+        </option>
+        <option disabled>──────────────</option>
+        @foreach($customers as $c)
+            <option value="{{ $c->id_customer }}"
+                data-nama="{{ $c->nama }}"
+                data-nik="{{ $c->nik }}"
+                data-telp="{{ $c->no_telp }}"
+                data-alamat="{{ $c->alamat }}">
+                {{ $c->nama }} — {{ $c->nik }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
-                            <div class="field-group">
-                                <div class="field-label">NIK (KTP)</div>
-                                <input type="text" name="nik" class="form-control" placeholder="Masukkan 16 digit NIK" maxlength="16" required>
-                            </div>
+{{-- INFO STATUS CUSTOMER --}}
+<div id="infoCustomer" style="display:none; margin-bottom:16px;">
+    <div id="infoLama" style="display:none; background:#d1fae5; border:1px solid #a7f3d0; border-radius:8px; padding:10px 14px; font-size:13px; color:#065f46;">
+        <i class="fas fa-check-circle me-2"></i> Data customer ditemukan — field otomatis terisi dan dikunci.
+    </div>
+    <div id="infoBaru" style="display:none; background:#fef3c7; border:1px solid #fde68a; border-radius:8px; padding:10px 14px; font-size:13px; color:#92400e;">
+        <i class="fas fa-user-plus me-2"></i> Isi data customer baru — akan disimpan ke database.
+    </div>
+</div>
 
-                            <div class="field-group">
-                                <div class="field-label">No. Telepon</div>
-                                <input type="text" name="no_telp" class="form-control" placeholder="Contoh: 081234567890" required>
-                            </div>
-
-                            <div class="field-group top">
-                                <div class="field-label">Alamat</div>
-                                <textarea name="alamat" class="form-control" rows="2" placeholder="Masukkan alamat lengkap" required></textarea>
-                            </div>
+{{-- DATA CUSTOMER (auto-fill atau isi manual) --}}
+<div id="formCustomerBaru">
+    <div class="field-group">
+        <div class="field-label">Nama Penyewa</div>
+        <input type="text" name="nama" id="nama" class="form-control"
+               placeholder="Masukkan nama lengkap penyewa" required>
+    </div>
+    <div class="field-group">
+        <div class="field-label">NIK (KTP)</div>
+        <input type="text" name="nik" id="nik" class="form-control"
+               placeholder="Masukkan 16 digit NIK" maxlength="16" required>
+    </div>
+    <div class="field-group">
+        <div class="field-label">No. Telepon</div>
+        <input type="text" name="no_telp" id="no_telp" class="form-control"
+               placeholder="Contoh: 081234567890">
+    </div>
+    <div class="field-group top">
+        <div class="field-label">Alamat</div>
+        <textarea name="alamat" id="alamat" class="form-control" rows="2"
+                  placeholder="Masukkan alamat lengkap"></textarea>
+    </div>
+</div>
 
                             <hr class="section-divider">
 
@@ -271,7 +331,7 @@
                                 <button type="button" class="btn btn-outline-secondary rounded-2" data-metode="transfer">Transfer Bank</button>
                                 <button type="button" class="btn btn-outline-secondary rounded-2" data-metode="qris">QRIS</button>
                             </div>
-                        @csrf
+                       
                     </div>
 
                           
@@ -282,8 +342,7 @@
                                 <input type="file" name="bukti_pembayaran" class="form-control">
                             </div>
 
-                            <form action="{{ route('rental.store') }}" method="POST" enctype="multipart/form-data">
-
+                            
 
 
 
@@ -311,12 +370,12 @@
 
                             {{-- Tombol --}}
                             <div class="btn-row">
-                                <button type="submit" class="btn-confirm">
-                                    <i class="fas fa-circle-check" style="font-size:14px;"></i> Konfirmasi Penyewaan
-                                </button>
                                 <a href="{{ route('mobil.index') }}" class="btn-cancel">
                                     <i class="fas fa-times" style="font-size:13px;"></i> Batal
                                 </a>
+                                <button type="submit" class="btn-confirm">
+                                    <i class="fas fa-circle-check" style="font-size:14px;"></i> Konfirmasi Penyewaan
+                                </button>
                             </div>
 
                         </form>
@@ -413,5 +472,51 @@ document.querySelectorAll('[data-metode]').forEach(btn => {
 });
 </script>
 
+<script>
+function isiDataCustomer(select) {
+    const opt = select.options[select.selectedIndex];
+    const infoCustomer = document.getElementById('infoCustomer');
+    const infoLama = document.getElementById('infoLama');
+    const infoBaru = document.getElementById('infoBaru');
+    const fields = ['nama','nik','no_telp','alamat'];
+
+    if (opt.value === 'baru') {
+        // Tambah customer baru — kosongkan dan buka field
+        fields.forEach(id => {
+            document.getElementById(id).value    = '';
+            document.getElementById(id).readOnly = false;
+            document.getElementById(id).style.background = '';
+        });
+        infoCustomer.style.display = 'block';
+        infoLama.style.display = 'none';
+        infoBaru.style.display = 'block';
+
+    } else if (opt.value) {
+        // Customer lama — auto-fill dan kunci
+        document.getElementById('nama').value    = opt.dataset.nama;
+        document.getElementById('nik').value     = opt.dataset.nik;
+        document.getElementById('no_telp').value = opt.dataset.telp;
+        document.getElementById('alamat').value  = opt.dataset.alamat;
+        fields.forEach(id => {
+            document.getElementById(id).readOnly = true;
+            document.getElementById(id).style.background = '#f0f2f8';
+        });
+        infoCustomer.style.display = 'block';
+        infoLama.style.display = 'block';
+        infoBaru.style.display = 'none';
+
+    } else {
+        // Reset — pilih awal
+        fields.forEach(id => {
+            document.getElementById(id).value    = '';
+            document.getElementById(id).readOnly = false;
+            document.getElementById(id).style.background = '';
+        });
+        infoCustomer.style.display = 'none';
+        infoLama.style.display = 'none';
+        infoBaru.style.display = 'none';
+    }
+}
+</script>
 
 @endsection
