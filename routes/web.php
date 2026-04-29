@@ -1,14 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AktivitasController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MobilController;
+use App\Http\Controllers\RentalController;
+use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\UserController;
 use App\Models\Mobil;
 use App\Models\Rental;
 use App\Models\Transaksi;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TransaksiController;
 use Carbon\Carbon;
-use App\Http\Controllers\AktivitasController;
 
 
 
@@ -118,10 +121,10 @@ Route::post('/rental/{id}/return', [RentalController::class, 'return'])->name('r
 
 // CUSTOMER
 Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
-Route::post('/customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customer.store');
-Route::get('/customer/{id}/edit', [\App\Http\Controllers\CustomerController::class, 'edit'])->name('customer.edit');
-Route::put('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'update'])->name('customer.update');
-Route::delete('/customer/{id}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->name('customer.destroy');
+Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
+Route::get('/customer/{id}/edit', [CustomerController::class, 'edit'])->name('customer.edit');
+Route::put('/customer/{id}', [CustomerController::class, 'update'])->name('customer.update');
+Route::delete('/customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
 
 // ✅ TRANSAKSI (FIX PRINT)
 Route::resource('transaksi', TransaksiController::class);
@@ -137,9 +140,9 @@ Route::get('/charts', function () {
     return view('charts');
 })->name('charts');
 
-Route::get('/tables', [\App\Http\Controllers\UserController::class, 'index'])->name('tables');
-Route::post('/tables', [\App\Http\Controllers\UserController::class, 'store'])->name('user.store');
-Route::delete('/tables/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
+Route::get('/tables', [UserController::class, 'index'])->name('tables');
+Route::post('/tables', [UserController::class, 'store'])->name('user.store');
+Route::delete('/tables/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 
 // GENERATOR
 Route::get('/generate-mobil', function () {
