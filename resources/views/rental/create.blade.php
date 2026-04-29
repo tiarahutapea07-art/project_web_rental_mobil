@@ -255,16 +255,18 @@
     <div class="field-label">Customer</div>
     <select name="customer_id" id="customer_id" class="form-control" onchange="isiDataCustomer(this)">
         <option value="">-- Pilih Customer --</option>
-        <option value="baru" style="color:#059669; font-weight:700;">
+        <option value="baru" style="color:#059669; font-weight:700;"
+            {{ old('customer_id') === 'baru' ? 'selected' : '' }}>
              Tambah Customer Baru
         </option>
         <option disabled>──────────────</option>
         @foreach($customers as $c)
-            <option value="{{ $c->id_customer }}"
+            <option value="{{ $c->id }}"
                 data-nama="{{ $c->nama }}"
                 data-nik="{{ $c->nik }}"
                 data-telp="{{ $c->no_telp }}"
-                data-alamat="{{ $c->alamat }}">
+                data-alamat="{{ $c->alamat }}"
+                {{ old('customer_id') == $c->id ? 'selected' : '' }}>
                 {{ $c->nama }} — {{ $c->nik }}
             </option>
         @endforeach
@@ -423,27 +425,15 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const metodeBtns = document.querySelectorAll('button[data-metode]');
-    const bukti = document.getElementById('buktiWrapper');
-
-    metodeBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            let metode = this.getAttribute('data-metode');
-
-            if (metode === 'transfer' || metode === 'qris') {
-                bukti.style.display = 'block';
-            } else {
-                bukti.style.display = 'none';
-            }
-        });
-    });
-});
-</script>
-
-<script>
 const metodeInput = document.getElementById('metode_bayar');
 const bukti = document.getElementById('buktiWrapper');
+
+function initCustomerSelection() {
+    const select = document.getElementById('customer_id');
+    if (select) {
+        isiDataCustomer(select);
+    }
+}
 
 document.querySelectorAll('[data-metode]').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -470,6 +460,8 @@ document.querySelectorAll('[data-metode]').forEach(btn => {
         this.classList.add('btn-dark');
     });
 });
+
+window.addEventListener('DOMContentLoaded', initCustomerSelection);
 </script>
 
 <script>

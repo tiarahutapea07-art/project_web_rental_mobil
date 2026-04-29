@@ -7,17 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Transaksi extends Model
 {
     protected $fillable = [
-    'rental_id',
-    'tanggal_sewa',
-    'tanggal_kembali',
-    'total_harga',
-    'jumlah_bayar',
-    'metode_bayar',
-    'status_pembayaran',
-    'status_transaksi',
-    'tanggal_bayar',
-    'bukti_bayar'
-];
+        'rental_id',
+        'tanggal_sewa',
+        'tanggal_kembali',
+        'total_harga',
+        'jumlah_bayar',
+        'metode_bayar',
+        'status_pembayaran',
+        'status_transaksi',
+        'tanggal_bayar',
+        'bukti_pembayaran',
+        'bukti_bayar'
+    ];
 
     // Relasi ke rental
     public function rental()

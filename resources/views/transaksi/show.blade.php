@@ -86,17 +86,38 @@
 
 .bukti-wrap {
     text-align: center;
-    margin-top: 15px;
+    margin: 24px 28px;
+    padding: 20px;
+    border: 1px dashed #d1d5db;
+    border-radius: 18px;
+    background: #f8fafc;
+}
+
+.bukti-title {
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.bukti-caption {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #6b7280;
 }
 
 .bukti-img {
-    width: 250px;
+    width: 100%;
+    max-width: 560px;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, .12);
     cursor: pointer;
-    transition: 0.2s;
+    transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .bukti-img:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, .18);
 }
 
 .action-wrap {
@@ -206,10 +227,12 @@
     {{-- BUKTI --}}
     <div class="bukti-wrap">
         @if($transaksi->bukti_pembayaran)
-            <p><strong>Bukti Pembayaran</strong></p>
+            <p class="bukti-title">Bukti Pembayaran</p>
             <img src="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}" 
                  class="bukti-img"
+                 alt="Bukti Pembayaran"
                  onclick="openModal(this)">
+            <p class="bukti-caption">Klik gambar untuk memperbesar dan memeriksa bukti transfer atau QRIS.</p>
         @else
             <p class="text-muted">Belum ada bukti pembayaran</p>
         @endif

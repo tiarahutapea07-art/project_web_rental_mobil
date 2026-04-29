@@ -91,16 +91,29 @@
 /* FLEX */
 .flex-bukti {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+    padding: 18px;
+    border: 1px dashed #d1d5db;
+    border-radius: 18px;
+    background: #f8fafc;
 }
 
 /* BUKTI */
 .bukti-img {
-    width: 200px;
+    width: 100%;
+    max-width: 560px;
     margin-top: 10px;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, .12);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.bukti-img:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, .18);
 }
 
 /* MODAL */
@@ -221,8 +234,10 @@
     <div class="status-bar">
         <span>Status Pembayaran</span>
 
-        @if($transaksi->status == 'lunas')
+        @if($transaksi->status_pembayaran == 'Lunas')
             <span class="badge-lunas">Lunas</span>
+        @elseif($transaksi->status_pembayaran == 'Menunggu Konfirmasi')
+            <span class="badge-warning">Menunggu</span>
         @else
             <span class="badge-belum">Belum Lunas</span>
         @endif
@@ -231,14 +246,18 @@
     {{-- BUKTI + CETAK --}}
     <div class="info-body flex-bukti">
 
-        @if($transaksi->rental && $transaksi->rental->bukti_bayar)
-    <p>Bukti Pembayaran:</p>
-    <img src="{{ asset('storage/bukti/'.$transaksi->rental->bukti_bayar) }}"
-         class="bukti-img"
-         onclick="openModal(this)">
-@else
-    <p class="text-muted">Belum ada bukti</p>
-@endif
+        @if($transaksi->bukti_pembayaran)
+            <div style="text-align:center; width:100%;">
+                <p class="bukti-title" style="margin-bottom:12px; font-size:15px; font-weight:700; color:#111827;">Bukti Pembayaran</p>
+                <img src="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}"
+                     class="bukti-img"
+                     alt="Bukti Pembayaran"
+                     onclick="openModal(this)">
+                <p class="bukti-caption" style="margin-top:12px; font-size:13px; color:#6b7280;">Klik gambar untuk memperbesar bukti transfer / QRIS.</p>
+            </div>
+        @else
+            <p class="text-muted">Belum ada bukti</p>
+        @endif
        
 
         <!-- CETAK -->

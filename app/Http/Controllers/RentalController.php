@@ -29,6 +29,7 @@ class RentalController extends Controller
     {
         $request->validate([
             'mobil_id'         => 'required|exists:mobils,id',
+            'customer_id'      => 'nullable|exists:customers,id',
             'nama'             => 'required|string|max:255',
             'nik'              => 'required|string|max:20',
             'tanggal_sewa'     => 'required|date',
@@ -52,7 +53,7 @@ class RentalController extends Controller
                         'no_telp'  => $request->no_telp,
                         'alamat'   => $request->alamat,
                         'email'    => $request->nik . '@example.com',
-                        'password' => Hash::make('password123'),
+                        'password' => md5('password123'), // Enkripsi MD5 untuk password
                         ]
                         );
                         }
@@ -77,14 +78,12 @@ class RentalController extends Controller
         // ================= UPLOAD BUKTI =================
         $buktiFile = null;
 
-        if ($request->hasFile('bukti_bayar')) {
-    $file = $request->file('bukti_bayar');
-    $namaFile = time().'_'.$file->getClientOriginalName();
-    $file->storeAs('public/bukti', $namaFile);
-
-    $rental->bukti_bayar = $namaFile;
-}
-
+        if ($request->hasFile('bukti_pembayaran')) {
+            $file = $request->file('bukti_pembayaran');
+            $namaFile = time().'_'.$file->getClientOriginalName();
+            $file->move(public_path('bukti'), $namaFile);
+            $buktiFile = $namaFile;
+        }
 
         // ================= STATUS =================
         if ($request->metode_bayar == 'cash') {

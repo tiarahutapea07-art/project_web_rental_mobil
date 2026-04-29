@@ -16,6 +16,10 @@ class DashboardController extends Controller
         $mobilTersedia = Mobil::where('status', 'tersedia')->count();
         $mobilDisewa = Mobil::where('status', 'tidak tersedia')->count();
 
+        $pembayaranLunas = Transaksi::where('status_pembayaran', 'Lunas')->count();
+        $pembayaranMenunggu = Transaksi::where('status_pembayaran', 'Menunggu Konfirmasi')->count();
+        $pembayaranBelum = Transaksi::where('status_pembayaran', 'Belum Lunas')->count();
+
         // NEW: Monthly Revenue & Transactions for current year
         $revenueData = $this->getMonthlyRevenue();
         $transactionData = $this->getMonthlyTransactions();
@@ -24,6 +28,9 @@ class DashboardController extends Controller
             'totalMobil', 
             'mobilTersedia', 
             'mobilDisewa',
+            'pembayaranLunas',
+            'pembayaranMenunggu',
+            'pembayaranBelum',
             'revenueData',
             'transactionData'
         ));
