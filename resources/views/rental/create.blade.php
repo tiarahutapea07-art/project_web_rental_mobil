@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <style>
     .mobil-card {
         background: linear-gradient(135deg, #1A2E4A 0%, #243d63 100%);
@@ -257,7 +256,7 @@
     <select name="customer_id" id="customer_id" class="form-control" onchange="isiDataCustomer(this)">
         <option value="">-- Pilih Customer --</option>
         <option value="baru" style="color:#059669; font-weight:700;"
-            {{ old('customer_id') === 'baru' ? 'selected' : '' }}>
+            {{ old('customer_id') === 'baru' || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId === 'baru') ? 'selected' : '' }}>
              Tambah Customer Baru
         </option>
         <option disabled>──────────────</option>
@@ -267,7 +266,7 @@
                 data-nik="{{ $c->nik }}"
                 data-telp="{{ $c->no_telp }}"
                 data-alamat="{{ $c->alamat }}"
-                {{ old('customer_id') == $c->id || (!old('customer_id') && isset($currentCustomer) && $currentCustomer->id == $c->id) ? 'selected' : '' }}>
+                {{ old('customer_id') == $c->id || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId == $c->id) || (!old('customer_id') && isset($currentCustomer) && $currentCustomer->id == $c->id) ? 'selected' : '' }}>
                 {{ $c->nama }} — {{ $c->nik }}
             </option>
         @endforeach
@@ -292,7 +291,7 @@
                placeholder="Masukkan nama lengkap penyewa"
                value="{{ old('nama', optional($currentCustomer)->nama) }}"
                required
-               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
+               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
     </div>
     <div class="field-group">
         <div class="field-label">NIK (KTP)</div>
@@ -300,35 +299,40 @@
                placeholder="Masukkan 16 digit NIK" maxlength="16"
                value="{{ old('nik', optional($currentCustomer)->nik) }}"
                required
-               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
+               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
     </div>
     <div class="field-group">
         <div class="field-label">No. Telepon</div>
         <input type="text" name="no_telp" id="no_telp" class="form-control"
                placeholder="Contoh: 081234567890"
                value="{{ old('no_telp', optional($currentCustomer)->no_telp) }}"
-               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
+               {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>
     </div>
     <div class="field-group top">
         <div class="field-label">Alamat</div>
         <textarea name="alamat" id="alamat" class="form-control" rows="2"
                   placeholder="Masukkan alamat lengkap"
-                  {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>{{ old('alamat', optional($currentCustomer)->alamat) }}</textarea>
+                  {{ (old('customer_id') && old('customer_id') !== 'baru') || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId !== 'baru') || (!old('customer_id') && isset($currentCustomer)) ? 'readonly' : '' }}>{{ old('alamat', optional($currentCustomer)->alamat) }}</textarea>
     </div>
 </div>
 
                             <hr class="section-divider">
 
                             <div class="field-group">
-                                <div class="field-label">Tanggal Sewa</div>
-                                <input type="text" name="tanggal_sewa" id="tanggal_sewa" class="form-control" placeholder="YYYY-MM-DD" required autocomplete="off">
-                            </div>
+    <div class="field-label">Tanggal Sewa</div>
+    <input type="text" name="tanggal_sewa" id="tanggal_sewa"
+           class="form-control" placeholder="Pilih tanggal sewa"
+           value="{{ old('tanggal_sewa', $tanggalSewa ?? '') }}"
+           autocomplete="off" required>
+</div>
 
-                            <div class="field-group">
-                                <div class="field-label">Tanggal Kembali</div>
-                                <input type="text" name="tanggal_kembali" id="tanggal_kembali" class="form-control" placeholder="YYYY-MM-DD" required autocomplete="off">
-                            </div>
-
+<div class="field-group">
+    <div class="field-label">Tanggal Kembali</div>
+    <input type="text" name="tanggal_kembali" id="tanggal_kembali"
+           class="form-control" placeholder="Pilih tanggal kembali"
+           value="{{ old('tanggal_kembali', $tanggalKembali ?? '') }}"
+           autocomplete="off" required>
+</div>
                             <hr class="section-divider">
 
                            <div class="form-group mt-3">
@@ -399,16 +403,30 @@
     </div>
 </div>
 
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const metodeBtns = document.querySelectorAll('button[data-metode]');
+    const bukti = document.getElementById('buktiWrapper');
+
+    metodeBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            let metode = this.getAttribute('data-metode');
+
+            if (metode === 'transfer' || metode === 'qris') {
+                bukti.style.display = 'block';
+            } else {
+                bukti.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
 <script>
 const metodeInput = document.getElementById('metode_bayar');
 const bukti = document.getElementById('buktiWrapper');
-
-function initCustomerSelection() {
-    const select = document.getElementById('customer_id');
-    if (select) {
-        isiDataCustomer(select);
-    }
-}
 
 document.querySelectorAll('[data-metode]').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -435,35 +453,98 @@ document.querySelectorAll('[data-metode]').forEach(btn => {
         this.classList.add('btn-dark');
     });
 });
+</script>
 
-window.addEventListener('DOMContentLoaded', initCustomerSelection);
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+
+<script>
+jQuery(document).ready(function($) {
+    $("#tanggal_sewa").datepicker({
+        dateFormat: "yy-mm-dd",
+        minDate: 0,
+        dayNames: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
+        dayNamesMin: ['Min','Sen','Sel','Rab','Kam','Jum','Sab'],
+        monthNames: ['Januari','Februari','Maret','April','Mei','Juni',
+                     'Juli','Agustus','September','Oktober','November','Desember'],
+        monthNamesShort: ['Jan','Feb','Mar','Apr','Mei','Jun',
+                          'Jul','Agu','Sep','Okt','Nov','Des'],
+        onSelect: function(dateStr) {
+            const selectedDate = $(this).datepicker('getDate');
+            const nextDay = new Date(selectedDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            $("#tanggal_kembali").datepicker("option", "minDate", nextDay);
+            $("#tanggal_kembali").val('');
+            hitungHarga();
+        }
+    });
+
+    $("#tanggal_kembali").datepicker({
+        dateFormat: "yy-mm-dd",
+        minDate: "+1d",
+        dayNames: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
+        dayNamesMin: ['Min','Sen','Sel','Rab','Kam','Jum','Sab'],
+        monthNames: ['Januari','Februari','Maret','April','Mei','Juni',
+                     'Juli','Agustus','September','Oktober','November','Desember'],
+        monthNamesShort: ['Jan','Feb','Mar','Apr','Mei','Jun',
+                          'Jul','Agu','Sep','Okt','Nov','Des'],
+        onSelect: function() {
+            hitungHarga();
+        }
+    });
+
+    function hitungHarga() {
+        const sewa    = $("#tanggal_sewa").datepicker('getDate');
+        const kembali = $("#tanggal_kembali").datepicker('getDate');
+        const harga   = parseFloat("{{ $mobil->harga_per_hari }}");
+        if (sewa && kembali && kembali > sewa) {
+            const diff = Math.ceil((kembali - sewa) / (1000 * 60 * 60 * 24));
+            $("#lamaSewa").text(diff + ' hari');
+            $("#totalHarga").text('Rp ' + (diff * harga).toLocaleString('id-ID'));
+            $("#priceSummary").show();
+        } else {
+            $("#priceSummary").hide();
+        }
+    }
+});
 </script>
 
 <script>
+// Fix dropdown customer
+document.addEventListener('DOMContentLoaded', function() {
+    const selectCustomer = document.getElementById('customer_id');
+    if (selectCustomer) {
+        // Panggil saat load jika ada selected
+        isiDataCustomer(selectCustomer);
+        
+        selectCustomer.addEventListener('change', function() {
+            isiDataCustomer(this);
+        });
+    }
+});
+
 function isiDataCustomer(select) {
     const opt = select.options[select.selectedIndex];
+    const fields = ['nama','nik','no_telp','alamat'];
     const infoCustomer = document.getElementById('infoCustomer');
     const infoLama = document.getElementById('infoLama');
     const infoBaru = document.getElementById('infoBaru');
-    const fields = ['nama','nik','no_telp','alamat'];
 
     if (opt.value === 'baru') {
-        // Tambah customer baru — kosongkan dan buka field
         fields.forEach(id => {
-            document.getElementById(id).value    = '';
+            document.getElementById(id).value = '';
             document.getElementById(id).readOnly = false;
             document.getElementById(id).style.background = '';
         });
         infoCustomer.style.display = 'block';
         infoLama.style.display = 'none';
         infoBaru.style.display = 'block';
-
     } else if (opt.value) {
-        // Customer lama — auto-fill dan kunci
-        document.getElementById('nama').value    = opt.dataset.nama;
-        document.getElementById('nik').value     = opt.dataset.nik;
-        document.getElementById('no_telp').value = opt.dataset.telp;
-        document.getElementById('alamat').value  = opt.dataset.alamat;
+        document.getElementById('nama').value    = opt.dataset.nama || '';
+        document.getElementById('nik').value     = opt.dataset.nik || '';
+        document.getElementById('no_telp').value = opt.dataset.telp || '';
+        document.getElementById('alamat').value  = opt.dataset.alamat || '';
         fields.forEach(id => {
             document.getElementById(id).readOnly = true;
             document.getElementById(id).style.background = '#f0f2f8';
@@ -471,11 +552,9 @@ function isiDataCustomer(select) {
         infoCustomer.style.display = 'block';
         infoLama.style.display = 'block';
         infoBaru.style.display = 'none';
-
     } else {
-        // Reset — pilih awal
         fields.forEach(id => {
-            document.getElementById(id).value    = '';
+            document.getElementById(id).value = '';
             document.getElementById(id).readOnly = false;
             document.getElementById(id).style.background = '';
         });
@@ -486,58 +565,60 @@ function isiDataCustomer(select) {
 }
 </script>
 
+@endsection
+
 @push('scripts')
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+
 <script>
-$(function() {
-    if (!($.ui && $.ui.datepicker)) {
-        return;
-    }
-
-    const hargaPerHari = parseFloat("{{ $mobil->harga_per_hari }}");
-    const priceSummary = document.getElementById('priceSummary');
-    const lamaSewa = document.getElementById('lamaSewa');
-    const totalHarga = document.getElementById('totalHarga');
-
-    $('#tanggal_sewa').datepicker({
-        dateFormat: 'yy-mm-dd',
+$(document).ready(function() {
+    $("#tanggal_sewa").datepicker({
+        dateFormat: "yy-mm-dd",
         minDate: 0,
-        onSelect: function() {
+        dayNames: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
+        dayNamesMin: ['Min','Sen','Sel','Rab','Kam','Jum','Sab'],
+        monthNames: ['Januari','Februari','Maret','April','Mei','Juni',
+                     'Juli','Agustus','September','Oktober','November','Desember'],
+        monthNamesShort: ['Jan','Feb','Mar','Apr','Mei','Jun',
+                          'Jul','Agu','Sep','Okt','Nov','Des'],
+        onSelect: function(dateStr) {
             const selectedDate = $(this).datepicker('getDate');
-            $('#tanggal_kembali').datepicker('option', 'minDate', selectedDate);
-            calculatePrice();
+            const nextDay = new Date(selectedDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            $("#tanggal_kembali").datepicker("option", "minDate", nextDay);
+            $("#tanggal_kembali").val('');
+            hitungHarga();
         }
     });
 
-    $('#tanggal_kembali').datepicker({
-        dateFormat: 'yy-mm-dd',
-        minDate: 0,
-        onSelect: calculatePrice
+    $("#tanggal_kembali").datepicker({
+        dateFormat: "yy-mm-dd",
+        minDate: "+1d",
+        dayNames: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
+        dayNamesMin: ['Min','Sen','Sel','Rab','Kam','Jum','Sab'],
+        monthNames: ['Januari','Februari','Maret','April','Mei','Juni',
+                     'Juli','Agustus','September','Oktober','November','Desember'],
+        monthNamesShort: ['Jan','Feb','Mar','Apr','Mei','Jun',
+                          'Jul','Agu','Sep','Okt','Nov','Des'],
+        onSelect: function() {
+            hitungHarga();
+        }
     });
 
-    function calculatePrice() {
-        const startVal = $('#tanggal_sewa').val();
-        const endVal = $('#tanggal_kembali').val();
-
-        if (!startVal || !endVal) {
-            priceSummary.style.display = 'none';
-            return;
-        }
-
-        const start = new Date(startVal);
-        const end = new Date(endVal);
-
-        if (end > start) {
-            const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-            lamaSewa.textContent = diffDays + ' hari';
-            totalHarga.textContent = 'Rp ' + (diffDays * hargaPerHari).toLocaleString('id-ID');
-            priceSummary.style.display = 'block';
+    function hitungHarga() {
+        const sewa    = $("#tanggal_sewa").datepicker('getDate');
+        const kembali = $("#tanggal_kembali").datepicker('getDate');
+        const harga   = parseFloat("{{ $mobil->harga_per_hari }}");
+        if (sewa && kembali && kembali > sewa) {
+            const diff = Math.ceil((kembali - sewa) / (1000 * 60 * 60 * 24));
+            $("#lamaSewa").text(diff + ' hari');
+            $("#totalHarga").text('Rp ' + (diff * harga).toLocaleString('id-ID'));
+            $("#priceSummary").show();
         } else {
-            priceSummary.style.display = 'none';
+            $("#priceSummary").hide();
         }
     }
 });
 </script>
 @endpush
-
-@endsection

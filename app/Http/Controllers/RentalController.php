@@ -13,7 +13,7 @@ use Yajra\DataTables\DataTables;
 
 class RentalController extends Controller
 {
-    public function create($mobil_id)
+    public function create(Request $request, $mobil_id)
     {
         $mobil = Mobil::findOrFail($mobil_id);
 
@@ -22,13 +22,25 @@ class RentalController extends Controller
         }
 
         $customers = Customer::orderBy('nama')->get();
+        $selectedCustomerId = $request->query('customer_id');
+        $tanggalSewa = $request->query('tanggal_sewa');
+        $tanggalKembali = $request->query('tanggal_kembali');
         $currentCustomer = null;
 
         if (session('customer_id')) {
             $currentCustomer = Customer::find(session('customer_id'));
+        } elseif ($selectedCustomerId && $selectedCustomerId !== 'baru') {
+            $currentCustomer = Customer::find($selectedCustomerId);
         }
 
-        return view('rental.create', compact('mobil', 'customers', 'currentCustomer'));
+        return view('rental.create', compact(
+            'mobil',
+            'customers',
+            'currentCustomer',
+            'selectedCustomerId',
+            'tanggalSewa',
+            'tanggalKembali'
+        ));
     }
 
     public function store(Request $request)
