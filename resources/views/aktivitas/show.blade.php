@@ -88,6 +88,15 @@
     border-radius: 20px;
 }
 
+.badge-warning {
+    background: rgba(245,158,11,.15);
+    color: #92400e;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
 /* FLEX */
 .flex-bukti {
     display: flex;
@@ -224,7 +233,7 @@
             <div>
                 <div class="info-label">Metode</div>
                 <div class="info-value">
-                    {{ $transaksi->metode_bayar ? strtoupper($transaksi->metode_bayar) : '-' }}
+                    {{ $transaksi->metode_bayar ? strtoupper($transaksi->metode_bayar) : 'Tidak tercatat' }}
                 </div>
             </div>
         </div>
@@ -236,8 +245,7 @@
 
         @if($transaksi->status_pembayaran == 'Lunas')
             <span class="badge-lunas">Lunas</span>
-        @elseif($transaksi->status_pembayaran == 'Menunggu Konfirmasi')
-            <span class="badge-warning">Menunggu</span>
+       
         @else
             <span class="badge-belum">Belum Lunas</span>
         @endif

@@ -133,36 +133,29 @@ public function tandaiLunas($id)
 
    public function print($id)
 {
-    $transaksi = Transaksi::with('rental.mobil', 'rental.customer')
-        ->findOrFail($id);
-
-    $terbilang = $this->terbilang($transaksi->rental->total_harga);
-
+    $transaksi = Transaksi::with('rental.mobil', 'rental.customer')->findOrFail($id);
+    $terbilang = $this->terbilang($transaksi->rental->total_harga) . ' Rupiah';
     return view('transaksi.print', compact('transaksi', 'terbilang'));
 }
 
-function terbilang($angka)
+private function terbilang($angka)
 {
-    $angka = abs($angka);
-    $baca = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+    $angka = abs(intval($angka));
+    $huruf = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan',
+              'Sepuluh', 'Sebelas', 'Dua Belas', 'Tiga Belas', 'Empat Belas', 'Lima Belas',
+              'Enam Belas', 'Tujuh Belas', 'Delapan Belas', 'Sembilan Belas'];
 
-    if ($angka < 12) {
-        return " " . $baca[$angka];
-    } elseif ($angka < 20) {
-        return $this->terbilang($angka - 10) . " Belas";
-    } elseif ($angka < 100) {
-        return $this->terbilang($angka / 10) . " Puluh" . $this->terbilang($angka % 10);
-    } elseif ($angka < 200) {
-        return " Seratus" . $this->terbilang($angka - 100);
-    } elseif ($angka < 1000) {
-        return $this->terbilang($angka / 100) . " Ratus" . $this->terbilang($angka % 100);
-    } elseif ($angka < 2000) {
-        return " Seribu" . $this->terbilang($angka - 1000);
-    } elseif ($angka < 1000000) {
-        return $this->terbilang($angka / 1000) . " Ribu" . $this->terbilang($angka % 1000);
-    } else {
-        return "Jumlah terlalu besar";
-    }
+    if ($angka < 20) return $huruf[$angka];
+    if ($angka < 100) return $huruf[intval($angka/10)*10 == 20 ? 2 : intval($angka/10)] .
+        ($angka % 10 ? ' Puluh ' . $huruf[$angka % 10] : ' Puluh');
+    if ($angka < 200) return 'Seratus' . ($angka % 100 ? ' ' . $this->terbilang($angka % 100) : '');
+    if ($angka < 1000) return $huruf[intval($angka/100)] . ' Ratus' . ($angka % 100 ? ' ' . $this->terbilang($angka % 100) : '');
+    if ($angka < 2000) return 'Seribu' . ($angka % 1000 ? ' ' . $this->terbilang($angka % 1000) : '');
+    if ($angka < 1000000) return $this->terbilang(intval($angka/1000)) . ' Ribu' . ($angka % 1000 ? ' ' . $this->terbilang($angka % 1000) : '');
+    if ($angka < 1000000000) return $this->terbilang(intval($angka/1000000)) . ' Juta' . ($angka % 1000000 ? ' ' . $this->terbilang($angka % 1000000) : '');
+    return $this->terbilang(intval($angka/1000000000)) . ' Miliar' . ($angka % 1000000000 ? ' ' . $this->terbilang($angka % 1000000000) : '');
 }
+
+
 
 }

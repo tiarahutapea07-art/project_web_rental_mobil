@@ -13,10 +13,10 @@ class AuthController extends Controller
 {
     private $users = [
         [
-            'username' => 'kelompok6',
+            'username' => 'adminrentalcar',
             'password' => '12345',
             'role'     => 'admin',
-            'nama'     => 'Kelompok 6',
+            'nama'     => 'Admin',
         ],
         [
             'username' => 'user1',
