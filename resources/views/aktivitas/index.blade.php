@@ -133,8 +133,8 @@
         $rental  = $transaksi->rental;
         $mobil   = optional($rental->mobil);
         $customer = optional($rental->customer);
-        $status  = strtolower($transaksi->status_bayar ?? $transaksi->status_transaksi ?? '');
-    @endphp
+        $status = strtolower($transaksi->status_pembayaran ?? $transaksi->status_bayar ?? '');
+@endphp
 
     <div class="trx-card">
 

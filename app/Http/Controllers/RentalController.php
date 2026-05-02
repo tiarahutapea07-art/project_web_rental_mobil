@@ -47,7 +47,7 @@ class RentalController extends Controller
     {
         $request->validate([
             'mobil_id'         => 'required|exists:mobils,id',
-            'customer_id'      => 'nullable|exists:customers,id',
+            'customer_id'      => 'nullable|exists:customers,id_customer',
             'nama'             => 'required|string|max:255',
             'nik'              => 'required|string|max:20',
             'tanggal_sewa'     => 'required|date',
@@ -58,7 +58,7 @@ class RentalController extends Controller
 
         $mobil = Mobil::findOrFail($request->mobil_id);
 
-        // ================= CUSTOMER =================
+        // = CUSTOMER ==
         if ($request->customer_id) {
             // Pilih customer yang sudah ada
             $customer = Customer::findOrFail($request->customer_id);
@@ -70,22 +70,21 @@ class RentalController extends Controller
                         'nama'     => $request->nama,
                         'no_telp'  => $request->no_telp,
                         'alamat'   => $request->alamat,
-                        'email'    => $request->nik . '@example.com',
-                        'password' => md5('password123'), // Enkripsi MD5 untuk password
+                        
                         ]
                         );
                         }
 
-        // ================= HITUNG SEWA =================
+        // = HITUNG SEWA ==
         $tanggalSewa    = Carbon::parse($request->tanggal_sewa);
         $tanggalKembali = Carbon::parse($request->tanggal_kembali);
         $lamaSewa       = $tanggalSewa->diffInDays($tanggalKembali);
         $totalHarga     = $lamaSewa * $mobil->harga_per_hari;
 
-        // ================= RENTAL =================
+        // == RENTAL ==
         $rental = Rental::create([
             'mobil_id'        => $request->mobil_id,
-            'customer_id'     => $customer->id,
+            'customer_id'     => $customer->id_customer,
             'tanggal_sewa'    => $request->tanggal_sewa,
             'tanggal_kembali' => $request->tanggal_kembali,
             'lama_sewa'       => $lamaSewa,
@@ -93,7 +92,7 @@ class RentalController extends Controller
             'status'          => 'aktif',
         ]);
 
-        // ================= UPLOAD BUKTI =================
+        // == UPLOAD BUKTI ==
         $buktiFile = null;
 
         if ($request->hasFile('bukti_pembayaran')) {
@@ -103,25 +102,25 @@ class RentalController extends Controller
             $buktiFile = $namaFile;
         }
 
-        // ================= STATUS =================
+        // ==STATUS ==
         if ($request->metode_bayar == 'cash') {
             $statusPembayaran = 'Lunas';
         } else {
             $statusPembayaran = $buktiFile ? 'Menunggu Konfirmasi' : 'Belum Lunas';
         }
 
-        // ================= TRANSAKSI =================
+        //  TRANSAKSI =
         Transaksi::create([
             'rental_id'         => $rental->id,
             'jumlah_bayar'      => $totalHarga,
             'metode_bayar'      => $request->metode_bayar,
-            'bukti_pembayaran'  => $buktiFile,
-            'status_pembayaran' => $statusPembayaran,
+            'bukti_bayar'  => $buktiFile,
+            'status_bayar' => $statusPembayaran,
             'status_transaksi'  => 'pending',
             'tanggal_bayar'     => now(),
         ]);
 
-        // ================= UPDATE MOBIL =================
+        // = UPDATE MOBIL ====
         $mobil->update(['status' => 'tidak tersedia']);
 
         return redirect('/aktivitas')->with('success', 'Berhasil menyewa mobil!');

@@ -88,7 +88,7 @@
     </div>
 </div>
 
-<!-- ===== NEW: MONTHLY STATISTICS SECTION ===== -->
+<!-- == NEW: MONTHLY STATISTICS SECTION == -->
 <div class="row mt-5">
     <!-- Monthly Transactions Chart -->
     <div class="col-xl-6 col-md-12 mb-4">

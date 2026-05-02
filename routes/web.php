@@ -121,6 +121,7 @@ Route::post('/rental/{id}/return', [RentalController::class, 'return'])->name('r
 
 // CUSTOMER
 Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index');
+Route::get('/customer/create', [CustomerController::class, 'create'])->name('customer.create'); 
 Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
 Route::get('/customer/{id}/edit', [CustomerController::class, 'edit'])->name('customer.edit');
 Route::put('/customer/{id}', [CustomerController::class, 'update'])->name('customer.update');

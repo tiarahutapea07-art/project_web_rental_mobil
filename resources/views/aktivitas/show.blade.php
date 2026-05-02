@@ -252,32 +252,49 @@
     </div>
 
     {{-- BUKTI + CETAK --}}
-    <div class="info-body flex-bukti">
+<div class="info-body">
 
-        @if($transaksi->bukti_pembayaran)
-            <div style="text-align:center; width:100%;">
-                <p class="bukti-title" style="margin-bottom:12px; font-size:15px; font-weight:700; color:#111827;">Bukti Pembayaran</p>
-                <img src="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}"
-                     class="bukti-img"
-                     alt="Bukti Pembayaran"
-                     onclick="openModal(this)">
-                <p class="bukti-caption" style="margin-top:12px; font-size:13px; color:#6b7280;">Klik gambar untuk memperbesar bukti transfer / QRIS.</p>
+    @if($transaksi->bukti_pembayaran)
+    <div style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <div style="font-size:13px; font-weight:700; color:#374151;">
+                <i class="fas fa-image" style="color:#1A2744; margin-right:6px;"></i>
+                Bukti Pembayaran
             </div>
-        @else
-            <p class="text-muted">Belum ada bukti</p>
+            <a href="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}" 
+               target="_blank"
+               style="font-size:12px; color:#1A2744; text-decoration:none; font-weight:600; background:#e2e8f0; padding:4px 10px; border-radius:6px;">
+                <i class="fas fa-external-link-alt me-1"></i> Lihat Penuh
+            </a>
+        </div>
+        <img src="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}"
+             style="width:100%; max-width:280px; height:180px; object-fit:cover; border-radius:8px; cursor:pointer; display:block; margin:0 auto;"
+             alt="Bukti Pembayaran"
+             onclick="openModal(this)">
+        <p style="text-align:center; margin-top:8px; font-size:11px; color:#9ca3af;">
+            Klik gambar untuk memperbesar
+        </p>
+    </div>
+    @else
+        @if($transaksi->metode_bayar != 'cash')
+        <div style="background:#f8fafc; border:1px dashed #d1d5db; border-radius:12px; padding:20px; text-align:center; color:#9ca3af;">
+            <i class="fas fa-image fa-2x mb-2 d-block" style="opacity:0.4;"></i>
+            <p style="font-size:13px; margin:0;">Belum ada bukti pembayaran</p>
+        </div>
         @endif
+    @endif
        
 
         <!-- CETAK -->
-        <div>
-            @if($transaksi->status == 'lunas')
-                <a href="{{ route('transaksi.print', $transaksi->id) }}" 
-                   target="_blank"
-                   class="btn btn-dark mt-4">
-                   🖨️ Cetak Nota
-                </a>
-            @endif
-        </div>
+@if($transaksi->status_pembayaran == 'Lunas')
+<div style="display:flex; justify-content:flex-end; padding: 0 24px 20px;">
+    <a href="{{ route('transaksi.print', $transaksi->id) }}" 
+       target="_blank"
+       class="btn btn-dark">
+       🖨️ Cetak Nota
+    </a>
+</div>
+@endif
 
     </div>
 

@@ -123,8 +123,12 @@ public function tandaiLunas($id)
 {
     $transaksi = Transaksi::findOrFail($id);
 
-    $transaksi->status = 'lunas';
-    $transaksi->save();
+    $transaksi->update([
+        'status'            => 'lunas',
+        'status_bayar'      => 'lunas',
+        'status_pembayaran' => 'Lunas',
+        'tanggal_bayar'     => now(),
+    ]);
 
     return redirect()->back()->with('success', 'Transaksi berhasil dilunasi!');
 }

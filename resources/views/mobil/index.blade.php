@@ -84,6 +84,13 @@
         box-shadow: 0 8px 16px rgba(26, 39, 68, 0.4);
         color: #F59E0B;
     }
+.btn-sewa.disabled {
+    background: #475569 !important;
+    color: #fff !important;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
     .btn-edit {
         flex: 1; background: #F59E0B; border: none;
         color: #181715; border-radius: 8px;
@@ -228,10 +235,14 @@
                         </a>
                         @endif
 
-                        {{-- Tombol Sewa — semua bisa, tapi disable kalau sedang disewa --}}
-                        <a href="{{ url('/rental/create/'.$m->id) }}"
-                           class="btn btn-sewa btn-sm {{ $m->status == 'tidak tersedia' ? 'disabled' : '' }}">
-                            <i class="fas fa-key mr-1"></i> Sewa
+                       {{-- Tombol Sewa — semua bisa, tapi disable kalau sedang disewa --}}
+                       <a href="{{ $m->status == 'tidak tersedia' ? '#' : url('/rental/create/'.$m->id) }}"
+                            class="btn btn-sewa btn-sm {{ $m->status == 'tidak tersedia' ? 'disabled' : '' }}">
+                            @if($m->status == 'tidak tersedia')
+                                <i class="fas fa-ban mr-1"></i> Sedang Disewa
+                            @else
+                                <i class="fas fa-key mr-1"></i> Sewa
+                            @endif
                         </a>
                     </div>
 

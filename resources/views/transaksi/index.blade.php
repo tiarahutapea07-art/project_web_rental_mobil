@@ -288,7 +288,7 @@
         </td>
 
         <td>
-            <strong>{{ $trx->rental->customer->nama }}</strong>
+            <strong>{{ $trx->rental->customer->nama ?? '-' }}</strong>
         </td>
 
         <td>
