@@ -159,6 +159,7 @@
                 <p class="text-black-600 mb-0">
                     <i class="fas fa-info-circle mr-2"></i> {{ $mobils->count() }} kendaraan tersedia untuk disewa
                 </p>
+                
             </div>
 
             {{-- Tombol Tambah — hanya admin --}}

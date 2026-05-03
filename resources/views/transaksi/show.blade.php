@@ -1,6 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
+
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
 <style>
 .detail-wrap {
     max-width: 640px;
@@ -224,33 +228,53 @@
 
     </div>
 
-    {{-- BUKTI --}}
-    <div class="bukti-wrap">
-        @if($transaksi->bukti_pembayaran)
-            <p class="bukti-title">Bukti Pembayaran</p>
-            <img src="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}" 
-                 class="bukti-img"
-                 alt="Bukti Pembayaran"
-                 onclick="openModal(this)">
-            <p class="bukti-caption">Klik gambar untuk memperbesar dan memeriksa bukti transfer atau QRIS.</p>
-        @else
-            <p class="text-muted">Belum ada bukti pembayaran</p>
-        @endif
-    </div>
+{{-- BUKTI --}}
+<div class="bukti-wrap">
+    @php
+        $bukti = $transaksi->bukti_pembayaran ?: $transaksi->bukti_bayar;
+    @endphp
+
+    @if($bukti)
+        <p class="bukti-title">Bukti Pembayaran</p>
+
+        <img src="{{ asset('bukti/' . $bukti) }}"
+             class="bukti-img"
+             alt="Bukti Pembayaran"
+             onclick="openModal(this)">
+
+        <p class="bukti-caption">
+            Klik gambar untuk memperbesar bukti pembayaran.
+        </p>
+    @else
+        <p class="text-muted">Belum ada bukti pembayaran</p>
+    @endif
+</div>
 
     {{-- ACTION --}}
     <div class="action-wrap">
 
         {{-- Tombol konfirmasi hanya kalau ada bukti --}}
-        @if($transaksi->status_pembayaran != 'Lunas' && $transaksi->bukti_pembayaran)
-        <form action="{{ route('transaksi.konfirmasi', $transaksi->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-            <button class="btn btn-success">
-                Konfirmasi Pembayaran
-            </button>
-        </form>
-        @endif
+       @if($transaksi->status != 'lunas' && $transaksi->bukti_bayar)
+<form action="{{ route('transaksi.konfirmasi', $transaksi->id) }}" method="POST">
+    @csrf
+    @method('PUT')
+    <button class="btn btn-success">
+        Konfirmasi Pembayaran
+    </button>
+</form>
+@endif
+
+{{-- TAMPILKAN BUKTI PEMBAYARAN --}}
+@if($transaksi->bukti_pembayaran)
+    <p><strong>Bukti Pembayaran:</strong></p>
+
+    <img src="{{ asset('bukti/' . $transaksi->bukti_pembayaran) }}"
+         alt="Bukti Pembayaran"
+         style="max-width:300px; border-radius:10px;">
+
+@else
+    <p>Tidak ada bukti pembayaran</p>
+@endif
 
         <br><br>
 

@@ -255,6 +255,7 @@
                     Data Transaksi
                 </div>
                 <p class="trx-subtitle" style="margin-top:4px;margin-left:26px;">Riwayat pembayaran & status transaksi</p>
+
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
                 <div class="alert-otomatis">
@@ -305,12 +306,11 @@
 
         {{-- ✅ STATUS (SUDAH DIPERBAIKI) --}}
         <td class="text-center">
-            @if($trx->status == 'lunas')
-                <span class="badge-lunas">Lunas</span>
-            @else
-                <span class="badge-belum">Belum Lunas</span>
-            @endif
-
+          @if(strtolower($trx->status_bayar ?? '') == 'lunas')
+    <span class="badge-lunas">Lunas</span>
+@else
+    <span class="badge-belum">Belum Lunas</span>
+@endif
 
         </td>
 
@@ -329,7 +329,7 @@
                 </a>
 
                 {{-- Tombol Lunas hanya muncul kalau belum lunas --}}
-                @if($trx->status != 'lunas')
+               @if(strtolower($trx->status_bayar ?? '') != 'lunas')
                 <form action="{{ route('transaksi.lunas', $trx->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('PATCH')

@@ -9,14 +9,31 @@ use Carbon\Carbon;
 
 class TransaksiController extends Controller
 {
-    public function index()
-    {
-        $transaksis = Transaksi::with('rental.customer', 'rental.mobil')
-            ->latest()
-            ->get();
+ public function index(Request $request)
+{
+    $search = $request->search;
 
-        return view('transaksi.index', compact('transaksis'));
-    }
+    $transaksis = Transaksi::with(['rental.customer', 'rental.mobil'])
+        ->when($search, function ($query) use ($search) {
+
+            $query->where(function ($q) use ($search) {
+
+                $q->whereHas('rental.customer', function ($qc) use ($search) {
+                    $qc->where('nama', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('rental.mobil', function ($qm) use ($search) {
+                    $qm->where('nama_mobil', 'like', '%' . $search . '%');
+                })
+                ->orWhere('status_bayar', 'like', '%' . $search . '%');
+
+            });
+
+        })
+        ->latest()
+        ->get();
+
+    return view('transaksi.index', compact('transaksis'));
+}
 
     public function create()
     {
@@ -123,16 +140,12 @@ public function tandaiLunas($id)
 {
     $transaksi = Transaksi::findOrFail($id);
 
-    $transaksi->update([
-        'status'            => 'lunas',
-        'status_bayar'      => 'lunas',
-        'status_pembayaran' => 'Lunas',
-        'tanggal_bayar'     => now(),
-    ]);
+    $transaksi->status_bayar = 'lunas';
+    $transaksi->tanggal_bayar = now();
+    $transaksi->save();
 
     return redirect()->back()->with('success', 'Transaksi berhasil dilunasi!');
 }
-
 
 
    public function print($id)

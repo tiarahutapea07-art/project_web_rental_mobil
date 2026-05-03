@@ -8,13 +8,20 @@ use Illuminate\Http\Request;
 
 class MobilController extends Controller
 {
-    public function index()
-    {
-        $mobils = Mobil::all();
-        $rentalAktif = Rental::where('status', 'aktif')->pluck('mobil_id')->toArray();
-        return view('mobil.index', compact('mobils'));
-    }
 
+public function index(Request $request)
+{
+    $search = $request->search;
+
+    $mobils = Mobil::when($search, function ($query, $search) {
+        return $query->where('nama_mobil', 'like', '%' . $search . '%')
+                     ->orWhere('no_polisi', 'like', '%' . $search . '%');
+    })->get();
+
+    $rentalAktif = Rental::where('status', 'aktif')->pluck('mobil_id')->toArray();
+
+    return view('mobil.index', compact('mobils', 'rentalAktif'));
+}
     public function create()
     {
         return view('mobil.create');
