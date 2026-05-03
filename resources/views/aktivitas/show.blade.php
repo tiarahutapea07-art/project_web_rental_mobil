@@ -254,20 +254,20 @@
     {{-- BUKTI + CETAK --}}
 <div class="info-body">
 
-    @if($transaksi->bukti_pembayaran)
+    @if($transaksi->bukti_bayar)
     <div style="background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:16px;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
             <div style="font-size:13px; font-weight:700; color:#374151;">
                 <i class="fas fa-image" style="color:#1A2744; margin-right:6px;"></i>
                 Bukti Pembayaran
             </div>
-            <a href="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}" 
+            <a href="{{ asset('bukti/'.$transaksi->bukti_bayar) }}" 
                target="_blank"
                style="font-size:12px; color:#1A2744; text-decoration:none; font-weight:600; background:#e2e8f0; padding:4px 10px; border-radius:6px;">
                 <i class="fas fa-external-link-alt me-1"></i> Lihat Penuh
             </a>
         </div>
-        <img src="{{ asset('bukti/'.$transaksi->bukti_pembayaran) }}"
+        <img src="{{ asset('bukti/'.$transaksi->bukti_bayar) }}"
              style="width:100%; max-width:280px; height:180px; object-fit:cover; border-radius:8px; cursor:pointer; display:block; margin:0 auto;"
              alt="Bukti Pembayaran"
              onclick="openModal(this)">
