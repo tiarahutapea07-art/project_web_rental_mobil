@@ -105,17 +105,11 @@
         <div class="sidebar-heading">Addons</div>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCustomer"
-               aria-expanded="true" aria-controls="collapseCustomer">
-                <i class="fas fa-fw fa-users"></i>
-                <span>Customer</span>
-            </a>
-            <div id="collapseCustomer" class="collapse" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="{{ url('/customer') }}">Daftar Customer</a>
-                </div>
-            </div>
-        </li>
+    <a class="nav-link" href="{{ url('/customer') }}">
+        <i class="fas fa-fw fa-users"></i>
+        <span>Customer</span>
+    </a>
+</li>
 
         <li class="nav-item">
             <a class="nav-link" href="{{ url('/rental') }}">

@@ -3,35 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Customer;
-use App\Models\Mobil;
-use App\Models\Transaksi;
-use App\Models\Rental;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    private $users = [
-        [
-            'username' => 'adminrentalcar',
-            'password' => '12345',
-            'role'     => 'admin',
-            'nama'     => 'Admin',
-        ],
-        [
-            'username' => 'user1',
-            'password' => 'user123',
-            'role'     => 'user',
-            'nama'     => 'Customer 1',
-        ],
-        [
-            'username' => 'user2',
-            'password' => 'user123',
-            'role'     => 'user',
-            'nama'     => 'Customer 2',
-        ],
-    ];
-
     public function showLogin()
     {
         if (session('login')) {
@@ -43,32 +20,31 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $found = null;
-        foreach ($this->users as $user) {
-            if ($user['username'] === $request->username && $user['password'] === $request->password) {
-                $found = $user;
-                break;
-            }
-        }
+        // Cari user berdasarkan name (username) atau email
+        $user = User::where('name', $request->username)
+                    ->orWhere('email', $request->username)
+                    ->first();
 
-        if ($found) {
+        // Cek password
+        if ($user && Hash::check($request->password, $user->password)) {
             $sessionData = [
                 'login'    => true,
-                'role'     => $found['role'],
-                'username' => $found['username'],
-                'nama'     => $found['nama'],
+                'role'     => $user->role,
+                'username' => $user->name,
+                'nama'     => $user->name,
             ];
 
-            if ($found['role'] === 'user') {
-                $customer = Customer::where('nama', $found['nama'])->first();
+            // Kalau role user, cari customer yang terkait
+            if ($user->role === 'user') {
+                $customer = Customer::where('nama', $user->name)->first();
                 if ($customer) {
-                    $sessionData['customer_id'] = $customer->id;
+                    $sessionData['customer_id'] = $customer->id_customer;
                 }
             }
 
             session($sessionData);
 
-            if ($found['role'] === 'admin') return redirect('/dashboard');
+            if ($user->role === 'admin') return redirect('/dashboard');
             return redirect('/mobil');
         }
 

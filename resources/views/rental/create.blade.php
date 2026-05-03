@@ -261,12 +261,12 @@
         </option>
         <option disabled>──────────────</option>
         @foreach($customers as $c)
-            <option value="{{ $c->id }}"
+            <option value="{{ $c->id_customer}}"
                 data-nama="{{ $c->nama }}"
                 data-nik="{{ $c->nik }}"
                 data-telp="{{ $c->no_telp }}"
                 data-alamat="{{ $c->alamat }}"
-                {{ old('customer_id') == $c->id || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId == $c->id) || (!old('customer_id') && isset($currentCustomer) && $currentCustomer->id == $c->id) ? 'selected' : '' }}>
+                {{ old('customer_id') == $c->id_customer || (!old('customer_id') && isset($selectedCustomerId) && $selectedCustomerId == $c->id) || (!old('customer_id') && isset($currentCustomer) && $currentCustomer->id == $c->id) ? 'selected' : '' }}>
                 {{ $c->nama }} — {{ $c->nik }}
             </option>
         @endforeach
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectCustomer = document.getElementById('customer_id');
     if (selectCustomer) {
         // Panggil saat load jika ada selected
-        isiDataCustomer(selectCustomer);
+        
         
         selectCustomer.addEventListener('change', function() {
             isiDataCustomer(this);
