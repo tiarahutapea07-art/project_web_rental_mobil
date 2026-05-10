@@ -118,23 +118,29 @@
                 </div>
 
                 <div class="field-wrap">
-                    <label>NIK (Nomor Induk Kependudukan)</label>
-                    <input type="text" name="nik"
-                           class="form-control @error('nik') is-invalid @enderror"
-                           value="{{ old('nik') }}"
-                           placeholder="Contoh: 3201xxxxxxxxxxxx" maxlength="16" required>
+                    <label>NIK (Nomor Induk Kependudukan)</label><input type="text" name="nik" 
+                    class="form-control @error('nik') is-invalid @enderror"
+                    value="{{ old('nik') }}" 
+                    placeholder="Contoh: 120308989000765432" 
+                    maxlength="16"
+                    inputmode="numeric"
+                    pattern="[0-9]{16}"
+                    title="NIK harus 16 digit angka"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                     @error('nik')<span class="invalid-feedback">{{ $message }}</span>@enderror
                 </div>
-
-                <div class="field-wrap">
-                    <label>Nomor Telepon / WA</label>
-                    <input type="text" name="no_telp"
-                           class="form-control @error('no_telp') is-invalid @enderror"
-                           value="{{ old('no_telp') }}"
-                           placeholder="Contoh: 08123456789" required>
-                    @error('no_telp')<span class="invalid-feedback">{{ $message }}</span>@enderror
-                </div>
-
+                
+                <div class="field-wrap"><label>Nomor Telepon / WA</label>
+                <input type="text" name="no_telp" class="form-control @error('no_telp') is-invalid @enderror" value="{{ old('no_telp') }}"
+                placeholder="Contoh: 08123456789"
+                maxlength="15"
+                inputmode="numeric"
+                pattern="[0-9]{10,15}"
+                title="Nomor telepon harus berupa angka 10-15 digit"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                required>
+                @error('no_telp')<span class="invalid-feedback">{{ $message }}</span>@enderror
+            </div>
                 <div class="field-wrap">
                     <label>Alamat Lengkap</label>
                     <textarea name="alamat" rows="3"

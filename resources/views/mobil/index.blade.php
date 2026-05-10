@@ -228,38 +228,44 @@
                         <span>Ditambahkan {{ $m->created_at->diffForHumans() }}</span>
                     </div>
 
-                    <div class="action-buttons">
-                        {{-- Tombol Edit — hanya admin --}}
+                   <div class="mt-auto pt-2 border-top">
+
+                        <div class="d-flex" style="gap:8px; margin-bottom:8px;">
+                            @if(session('role') === 'admin')
+                            <a href="{{ url('/mobil/'.$m->id.'/edit') }}"
+                               class="btn btn-warning btn-sm flex-fill" style="font-weight:600;">
+                                <i class="fas fa-edit mr-1"></i> Edit
+                            </a>
+                            @endif
+
+                            @if($isDisewa)
+                                <span class="btn btn-sm flex-fill" style="background:#475569; color:#fff; font-weight:600; cursor:default;">
+                                    <i class="fas fa-ban mr-1"></i> Booked
+                                </span>
+                            @else
+                                <a href="{{ url('/rental/create/'.$m->id) }}"
+                                   class="btn btn-sm flex-fill" style="background:#1A2744; color:#fff; font-weight:600;">
+                                    <i class="fas fa-key mr-1"></i> Sewa
+                                </a>
+                            @endif
+                        </div>
+
                         @if(session('role') === 'admin')
-                        <a href="{{ url('/mobil/'.$m->id.'/edit') }}" class="btn btn-edit btn-sm">
-                            <i class="fas fa-edit mr-1"></i> Edit
-                        </a>
+                        <div class="text-center">
+                            <form action="{{ url('/mobil/'.$m->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="btn btn-sm"
+                                        style="color:#DC2626; background:none; border:none; font-size:13px;"
+                                        onclick="return confirm('Yakin ingin menghapus {{ $m->nama_mobil }}?');">
+                                    <i class="fas fa-trash-alt mr-1"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
                         @endif
 
-                       {{-- Tombol Sewa — semua bisa, tapi disable kalau sedang disewa --}}
-                       <a href="{{ $m->status == 'tidak tersedia' ? '#' : url('/rental/create/'.$m->id) }}"
-                            class="btn btn-sewa btn-sm {{ $m->status == 'tidak tersedia' ? 'disabled' : '' }}">
-                            @if($m->status == 'tidak tersedia')
-                                <i class="fas fa-ban mr-1"></i> Sedang Disewa
-                            @else
-                                <i class="fas fa-key mr-1"></i> Sewa
-                            @endif
-                        </a>
                     </div>
-
-                    {{-- Tombol Hapus — hanya admin --}}
-                    @if(session('role') === 'admin')
-                    <div class="text-center mt-2">
-                        <form action="{{ url('/mobil/'.$m->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-delete"
-                                    onclick="return confirm('Yakin ingin menghapus {{ $m->nama_mobil }}?');">
-                                <i class="fas fa-trash-alt"></i> Hapus
-                            </button>
-                        </form>
-                    </div>
-                    @endif
 
                 </div>
             </div>

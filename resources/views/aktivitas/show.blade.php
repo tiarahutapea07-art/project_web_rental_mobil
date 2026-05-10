@@ -285,13 +285,14 @@
     @endif
        
 
-        <!-- CETAK -->
+       {{-- CETAK NOTA --}}
 @if($transaksi->status_pembayaran == 'Lunas')
-<div style="display:flex; justify-content:flex-end; padding: 0 24px 20px;">
+<div style="display:flex; justify-content:center; padding: 20px 24px 28px;">
     <a href="{{ route('transaksi.print', $transaksi->id) }}" 
        target="_blank"
-       class="btn btn-dark">
-       🖨️ Cetak Nota
+       class="btn btn-dark px-5 py-2"
+       style="border-radius:10px; font-size:14px; font-weight:600; letter-spacing:0.5px;">
+       Cetak Nota
     </a>
 </div>
 @endif

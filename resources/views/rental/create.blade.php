@@ -358,9 +358,6 @@
                                 <input type="file" name="bukti_pembayaran" class="form-control">
                             </div>
 
-                            
-
-
 
                             <hr class="section-divider">
 

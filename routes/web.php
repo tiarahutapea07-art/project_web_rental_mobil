@@ -127,10 +127,10 @@ Route::get('/customer/{id}/edit', [CustomerController::class, 'edit'])->name('cu
 Route::put('/customer/{id}', [CustomerController::class, 'update'])->name('customer.update');
 Route::delete('/customer/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
 
-// ✅ TRANSAKSI (FIX PRINT)
+// TRANSAKSI (FIX PRINT)
 Route::resource('transaksi', TransaksiController::class);
 
-// 🔥 PRINT STRUK (INI YANG DIPAKAI)
+// PRINT STRUK (INI YANG DIPAKAI)
 Route::get('/transaksi/print/{id}', [TransaksiController::class, 'print'])->name('transaksi.print');
 
 // TANDAI LUNAS

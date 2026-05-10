@@ -263,19 +263,6 @@ use Illuminate\Support\Facades\Storage;
     </button>
 </form>
 @endif
-
-{{-- TAMPILKAN BUKTI PEMBAYARAN --}}
-@if($transaksi->bukti_pembayaran)
-    <p><strong>Bukti Pembayaran:</strong></p>
-
-    <img src="{{ asset('bukti/' . $transaksi->bukti_pembayaran) }}"
-         alt="Bukti Pembayaran"
-         style="max-width:300px; border-radius:10px;">
-
-@else
-    <p>Tidak ada bukti pembayaran</p>
-@endif
-
         <br><br>
 
         {{-- CETAK --}}

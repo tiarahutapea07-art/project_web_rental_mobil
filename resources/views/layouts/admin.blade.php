@@ -233,7 +233,7 @@
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
-                    <span>Copyright &copy; Amanah Rental {{ date('Y') }}</span>
+                    <span>&copy; {{ date('Y') }} Amanah Rental — Drive Your Journey</span>
                 </div>
             </div>
         </footer>
