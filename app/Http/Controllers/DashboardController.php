@@ -19,23 +19,11 @@ class DashboardController extends Controller
         $mobilDisewa = Rental::where('status', 'aktif')->distinct('mobil_id')->count('mobil_id');
         $mobilTersedia = $totalMobil - $mobilDisewa;
 
-        $pembayaranLunas = Transaksi::where('status_pembayaran', 'Lunas')->count();
-        $pembayaranMenunggu = Transaksi::where('status_pembayaran', 'Menunggu Konfirmasi')->count();
-        $pembayaranBelum = Transaksi::where('status_pembayaran', 'Belum Lunas')->count();
-
-        // NEW: Monthly Revenue & Transactions for current year
-        $revenueData = $this->getMonthlyRevenue();
-        $transactionData = $this->getMonthlyTransactions();
 
         return view('dashboard', compact(
             'totalMobil', 
             'mobilTersedia', 
             'mobilDisewa',
-            'pembayaranLunas',
-            'pembayaranMenunggu',
-            'pembayaranBelum',
-            'revenueData',
-            'transactionData'
         ));
     }
 
